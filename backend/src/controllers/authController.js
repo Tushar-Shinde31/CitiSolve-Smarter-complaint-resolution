@@ -21,11 +21,13 @@ export const register = async (req, res) => {
     }
 
     // Create user (default role = citizen unless explicitly set)
+    let userRole = role || "citizen";
+    if (userRole === "user") userRole = "citizen";
     const user = await User.create({
       name,
       email,
       password,
-      role: role || "citizen"
+      role: userRole
     });
 
     // Generate JWT
@@ -67,7 +69,7 @@ export const login = async (req, res, next) => {
 // GET /api/auth/me
 export const me = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user._id).select("-password");
     res.json(user);
   } catch (err) { next(err); }
 };

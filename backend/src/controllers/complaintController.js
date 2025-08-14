@@ -3,7 +3,7 @@ import Complaint from "../models/Complaint.js";
 // @desc Create new complaint
 export const createComplaint = async (req, res, next) => {
   try {
-    const complaintData = { ...req.body, user: req.user.id };
+    const complaintData = { ...req.body, user: req.user._id };
     const complaint = await Complaint.create(complaintData);
     res.status(201).json(complaint);
   } catch (error) {
@@ -16,20 +16,20 @@ export const createComplaint = async (req, res, next) => {
 export const getComplaints = async (req, res) => {
   try {
     let complaints;
-	const isAdmin = (req.user?.role || "").toLowerCase() === "admin";
+    const isAdmin = req.user?.role === "admin";
 
     if (isAdmin) {
       // Admin sees all complaints
       complaints = await Complaint.find()
-        .populate({ path: "user", select: "name email" });
+        .populate("user", "name email");
     } else {
       // Citizen sees only their complaints
-      complaints = await Complaint.find({ user: req.user.id })
-        .populate({ path: "user", select: "name email" });
+      complaints = await Complaint.find({ user: req.user._id })
+        .populate("user", "name email");
     }
 
     res.status(200).json(complaints);
-    console.log("GET /complaints -> role:", req.user?.role, "userId:", req.user?.id);
+    console.log("GET /complaints -> role:", req.user?.role, "userId:", req.user?._id);
   } catch (error) {
     res.status(500).json({ message: "Error fetching complaints", error });
   }

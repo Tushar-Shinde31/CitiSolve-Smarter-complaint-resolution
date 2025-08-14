@@ -7,7 +7,7 @@ export const protect = (req, res, next) => {
     if (!token) return res.status(401).json({ message: "Not authorized, no token" });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: decoded.id, role: decoded.role, email: decoded.email };
+    req.user = { _id: decoded.id, id: decoded.id, role: decoded.role, email: decoded.email };
     next();
   } catch (err) {
     return res.status(401).json({ message: "Not authorized, token failed" });
