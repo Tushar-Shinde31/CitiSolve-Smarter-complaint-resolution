@@ -10,6 +10,11 @@ const ComplaintSchema = new mongoose.Schema(
       default: () => nanoid(),
       unique: true,
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     name: { type: String, required: true },
     ward: { type: String, required: true },
     location: { type: String, required: true },

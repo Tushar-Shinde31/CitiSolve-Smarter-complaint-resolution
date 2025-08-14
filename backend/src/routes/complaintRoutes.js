@@ -9,8 +9,8 @@ import { protect, requireRole } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/", createComplaint);
-router.get("/", getComplaints);
+router.post("/", protect, requireRole("citizen"), createComplaint);
+router.get("/", protect, getComplaints);
 router.patch("/:id", protect, requireRole("admin"), updateComplaintStatus);
 
 export default router;

@@ -3,7 +3,8 @@ import Complaint from "../models/Complaint.js";
 // @desc Create new complaint
 export const createComplaint = async (req, res, next) => {
   try {
-    const complaint = await Complaint.create(req.body);
+    const complaintData = { ...req.body, user: req.user.id };
+    const complaint = await Complaint.create(complaintData);
     res.status(201).json(complaint);
   } catch (error) {
     next(error);
@@ -11,14 +12,27 @@ export const createComplaint = async (req, res, next) => {
 };
 
 // @desc Get all complaints
-export const getComplaints = async (req, res, next) => {
+// GET /api/complaints
+export const getComplaints = async (req, res) => {
   try {
-    const complaints = await Complaint.find().sort({ createdAt: -1 });
-    res.json(complaints);
+    let complaints;
+
+    if (req.user.role === "admin") {
+      // Admin sees all complaints
+      complaints = await Complaint.find()
+        .populate({ path: "user", select: "name email" });
+    } else {
+      // Citizen sees only their complaints
+      complaints = await Complaint.find({ user: req.user.id })
+        .populate({ path: "user", select: "name email" });
+    }
+
+    res.status(200).json(complaints);
   } catch (error) {
-    next(error);
+    res.status(500).json({ message: "Error fetching complaints", error });
   }
 };
+
 
 // @desc Update complaint status (and optional resolution note)
 export const updateComplaintStatus = async (req, res, next) => {
