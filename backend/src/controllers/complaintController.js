@@ -16,8 +16,9 @@ export const createComplaint = async (req, res, next) => {
 export const getComplaints = async (req, res) => {
   try {
     let complaints;
+	const isAdmin = (req.user?.role || "").toLowerCase() === "admin";
 
-    if (req.user.role === "admin") {
+    if (isAdmin) {
       // Admin sees all complaints
       complaints = await Complaint.find()
         .populate({ path: "user", select: "name email" });
@@ -28,6 +29,7 @@ export const getComplaints = async (req, res) => {
     }
 
     res.status(200).json(complaints);
+    console.log("GET /complaints -> role:", req.user?.role, "userId:", req.user?.id);
   } catch (error) {
     res.status(500).json({ message: "Error fetching complaints", error });
   }
