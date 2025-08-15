@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './styles/Login.css';
-import Navbar from './Navbar';
+import { useNavigate } from 'react-router-dom';
+import './Register.css'
 
-const Login = () => {
+const Register = () => {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
     role: 'citizen' // Default role set to citizen
@@ -27,7 +27,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,33 +38,43 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.message || 'Registration failed');
       }
 
       // Save user data and token to local storage
       localStorage.setItem('user', JSON.stringify(data));
       
-      // Redirect based on selected role
-      if (formData.role === 'admin') {
-        navigate('/admindashboard');
+      // Redirect based on user role
+      if (data.role === 'admin') {
+        navigate('/adminDashboard');
       } else {
-        navigate('/citizendashboard');
+        navigate('/citizenDashboard');
       }
     } catch (err) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <Navbar />
-    <div className="login-container">
-      <h2>Welcome Back</h2>
+    <div className="register-container">
+      <h2>Create an Account</h2>
       {error && <div className="error-message">{error}</div>}
       
-      <form onSubmit={handleSubmit} className="login-form">
+      <form onSubmit={handleSubmit} className="register-form">
+        <div className="form-group">
+          <label htmlFor="name">Full Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
@@ -85,12 +95,13 @@ const Login = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
+            minLength="6"
             required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="role">Login As</label>
+          <label htmlFor="role">Role</label>
           <select
             id="role"
             name="role"
@@ -105,16 +116,15 @@ const Login = () => {
         </div>
 
         <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? 'Registering...' : 'Register'}
         </button>
 
-        <p className="register-link">
-          Don't have an account? <Link to="/register">Register here</Link>
+        <p className="login-link">
+          Already have an account? <a href="/login">Login here</a>
         </p>
       </form>
-    </div>
     </div>
   );
 };
 
-export default Login;
+export default Register;

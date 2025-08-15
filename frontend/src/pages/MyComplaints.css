@@ -1,0 +1,57 @@
+.complaint-form-container {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+  }
+  
+  .complaint-form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .complaint-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .complaint-form label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .complaint-form input,
+  .complaint-form textarea {
+    margin-top: 6px;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .complaint-form input:focus,
+  .complaint-form textarea:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+  
+  .complaint-form button {
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .complaint-form button:hover {
+    background-color: #0056b3;
+  }
+  

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './styles/Register.css';
+import { Link, useNavigate } from 'react-router-dom';
+import './Login.css';
 
-const Register = () => {
+const Login = () => {
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
     role: 'citizen' // Default role set to citizen
@@ -27,7 +26,7 @@ const Register = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,43 +37,33 @@ const Register = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
+        throw new Error(data.message || 'Login failed');
       }
 
       // Save user data and token to local storage
       localStorage.setItem('user', JSON.stringify(data));
       
-      // Redirect based on user role
-      if (data.role === 'admin') {
-        navigate('/adminDashboard');
+      // Redirect based on selected role
+      if (formData.role === 'admin') {
+        navigate('/admindashboard');
       } else {
-        navigate('/citizenDashboard');
+        navigate('/mycomplaints');
       }
     } catch (err) {
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="register-container">
-      <h2>Create an Account</h2>
+    <div>
+      {/* <Navbar /> */}
+    <div className="login-container">
+      <h2>Welcome Back</h2>
       {error && <div className="error-message">{error}</div>}
       
-      <form onSubmit={handleSubmit} className="register-form">
-        <div className="form-group">
-          <label htmlFor="name">Full Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
+      <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
@@ -95,13 +84,12 @@ const Register = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            minLength="6"
             required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="role">Role</label>
+          <label htmlFor="role">Login As</label>
           <select
             id="role"
             name="role"
@@ -116,15 +104,16 @@ const Register = () => {
         </div>
 
         <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
+          {loading ? 'Logging in...' : 'Login'}
         </button>
 
-        <p className="login-link">
-          Already have an account? <a href="/login">Login here</a>
+        <p className="register-link">
+          Don't have an account? <Link to="/register">Register here</Link>
         </p>
       </form>
+    </div>
     </div>
   );
 };
 
-export default Register;
+export default Login;
