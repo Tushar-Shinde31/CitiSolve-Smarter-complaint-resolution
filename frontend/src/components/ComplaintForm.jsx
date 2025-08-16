@@ -30,6 +30,7 @@ const ComplaintForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Field ${name} changed to:`, value); // Debug log
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -214,7 +215,7 @@ const ComplaintForm = () => {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className={errors.category ? 'error' : ''}
+              className={`${errors.category ? 'error' : ''} ${formData.category ? 'has-value' : ''}`}
             >
               <option value="">Select a category</option>
               {categories.map(category => (
@@ -223,6 +224,11 @@ const ComplaintForm = () => {
                 </option>
               ))}
             </select>
+            {formData.category && (
+              <div className="selected-category">
+                Selected: <strong>{formData.category}</strong>
+              </div>
+            )}
             {errors.category && <span className="error-text">{errors.category}</span>}
           </div>
 

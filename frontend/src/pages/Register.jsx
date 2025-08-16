@@ -17,6 +17,7 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Register field ${name} changed to:`, value); // Debug log
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -123,7 +124,7 @@ const Register = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className={errors.name ? 'error' : ''}
+              className={`${errors.name ? 'error' : ''} ${formData.name ? 'has-value' : ''}`}
               placeholder="Enter your full name"
             />
             {errors.name && <span className="error-text">{errors.name}</span>}
@@ -137,7 +138,7 @@ const Register = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={errors.email ? 'error' : ''}
+              className={`${errors.email ? 'error' : ''} ${formData.email ? 'has-value' : ''}`}
               placeholder="Enter your email address"
             />
             {errors.email && <span className="error-text">{errors.email}</span>}
@@ -150,7 +151,7 @@ const Register = () => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className={errors.role ? 'error' : ''}
+              className={`${errors.role ? 'error' : ''} ${formData.role ? 'has-value' : ''}`}
             >
               <option value="citizen">Citizen</option>
               <option value="admin">Admin</option>
@@ -172,7 +173,7 @@ const Register = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className={errors.password ? 'error' : ''}
+              className={`${errors.password ? 'error' : ''} ${formData.password ? 'has-value' : ''}`}
               placeholder="Enter your password"
             />
             {errors.password && <span className="error-text">{errors.password}</span>}
@@ -186,7 +187,7 @@ const Register = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className={errors.confirmPassword ? 'error' : ''}
+              className={`${errors.confirmPassword ? 'error' : ''} ${formData.confirmPassword ? 'has-value' : ''}`}
               placeholder="Confirm your password"
             />
             {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}

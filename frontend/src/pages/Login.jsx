@@ -16,6 +16,7 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Login field ${name} changed to:`, value); // Debug log
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -110,7 +111,7 @@ const Login = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={errors.email ? 'error' : ''}
+              className={`${errors.email ? 'error' : ''} ${formData.email ? 'has-value' : ''}`}
               placeholder="Enter your email"
             />
             {errors.email && <span className="error-text">{errors.email}</span>}
@@ -124,7 +125,7 @@ const Login = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className={errors.password ? 'error' : ''}
+              className={`${errors.password ? 'error' : ''} ${formData.password ? 'has-value' : ''}`}
               placeholder="Enter your password"
             />
             {errors.password && <span className="error-text">{errors.password}</span>}

@@ -49,12 +49,35 @@
   font-size: 16px;
   transition: border-color 0.3s ease;
   box-sizing: border-box;
+  background-color: #fff;
+  color: #2d3748;
+  font-family: inherit;
 }
 
 .form-group input:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background-color: #f8fafc;
+}
+
+/* Placeholder styling */
+.form-group input::placeholder {
+  color: #a0aec0;
+  font-style: italic;
+}
+
+/* Better input styling */
+.form-group input {
+  font-weight: 500;
+}
+
+/* Style for inputs with values */
+.form-group input.has-value {
+  background-color: #f0f9ff;
+  border-color: #667eea;
+  color: #1e40af;
+  font-weight: 600;
 }
 
 .form-group input.error {
