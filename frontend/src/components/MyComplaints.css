@@ -77,6 +77,197 @@
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
 }
 
+.complaints-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 25px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.complaint-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e2e8f0;
+}
+
+.complaint-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.complaint-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 15px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.complaint-id {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 600;
+  background: #e2e8f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-open {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-progress {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.status-resolved {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.complaint-content {
+  padding: 20px;
+}
+
+.complaint-name {
+  color: #2d3748;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.complaint-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.9rem;
+  min-width: 100px;
+}
+
+.detail-value {
+  color: #2d3748;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+}
+
+.category-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.category-infrastructure {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.category-water {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.category-sanitation {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+.category-lighting {
+  background: #fef9c3;
+  color: #ca8a04;
+}
+
+.category-safety {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.category-environmental {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.category-noise {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.category-other {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.complaint-description {
+  margin-bottom: 20px;
+}
+
+.complaint-description p {
+  color: #4a5568;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+.complaint-photo {
+  margin-bottom: 20px;
+}
+
+.photo-thumbnail {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 8px;
+  border: 2px solid #e2e8f0;
+}
+
+.resolution-note {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.note-content {
+  color: #166534;
+  font-style: italic;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
 .loading-container,
 .error-container,
 .no-complaints {
@@ -101,30 +292,14 @@
   100% { transform: rotate(360deg); }
 }
 
-.loading-container p {
-  color: #4a5568;
+.error-message {
+  color: #e53e3e;
   font-size: 1.1rem;
-}
-
-.error-container .error-icon {
-  font-size: 3rem;
   margin-bottom: 20px;
 }
 
-.error-container h3 {
-  color: #e53e3e;
-  margin-bottom: 15px;
-  font-size: 1.5rem;
-}
-
-.error-container p {
-  color: #4a5568;
-  margin-bottom: 25px;
-  line-height: 1.6;
-}
-
 .retry-btn {
-  background: #667eea;
+  background: #e53e3e;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -135,18 +310,18 @@
 }
 
 .retry-btn:hover {
-  background: #5a67d8;
+  background: #c53030;
 }
 
-.no-complaints .no-complaints-icon {
+.no-complaints-icon {
   font-size: 4rem;
   margin-bottom: 20px;
 }
 
-.no-complaints h3 {
+.no-complaints h2 {
   color: #2d3748;
   margin-bottom: 15px;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
 }
 
 .no-complaints p {
@@ -155,214 +330,37 @@
   line-height: 1.6;
 }
 
-.submit-first-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: #4a5568;
+}
+
+.clear-filter-btn {
+  background: #667eea;
   color: white;
-  text-decoration: none;
-  padding: 14px 28px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.submit-first-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
-}
-
-.complaints-grid {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 25px;
-}
-
-.complaint-card {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e2e8f0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.complaint-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
-.complaint-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  gap: 15px;
-}
-
-.complaint-title {
-  color: #2d3748;
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin: 0;
-  line-height: 1.4;
-  flex: 1;
-}
-
-.status-badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-.status-open {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.status-progress {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.status-resolved {
-  background: #d1fae5;
-  color: #059669;
-}
-
-.status-default {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-.complaint-meta {
-  margin-bottom: 20px;
-}
-
-.meta-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.meta-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-.meta-label {
-  color: #64748b;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
   font-weight: 500;
-  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s ease;
 }
 
-.meta-value {
-  color: #1e293b;
-  font-weight: 500;
-  font-size: 0.9rem;
-  text-align: right;
-  max-width: 200px;
-  word-wrap: break-word;
+.clear-filter-btn:hover {
+  background: #5a67d8;
 }
 
-.category-badge {
-  padding: 4px 10px;
-  border-radius: 15px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.category-badge.infrastructure {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.category-badge.safety {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.category-badge.environmental {
-  background: #d1fae5;
-  color: #059669;
-}
-
-.category-badge.transportation {
-  background: #e0e7ff;
-  color: #7c3aed;
-}
-
-.category-badge.utilities {
-  background: #fce7f3;
-  color: #be185d;
-}
-
-.category-badge.noise {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.category-badge.other {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-.complaint-description {
-  margin-bottom: 20px;
-}
-
-.complaint-description p {
-  color: #4a5568;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.admin-notes {
-  background: #f8fafc;
-  border-left: 4px solid #667eea;
-  padding: 15px;
-  border-radius: 0 8px 8px 0;
-}
-
-.admin-notes h4 {
-  color: #2d3748;
-  margin: 0 0 10px 0;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.admin-notes p {
-  color: #4a5568;
-  margin: 0;
-  line-height: 1.5;
-  font-size: 0.9rem;
-}
-
+/* Responsive design */
 @media (max-width: 768px) {
-  .my-complaints-container {
-    padding: 20px 15px;
-  }
-  
   .my-complaints-header h1 {
     font-size: 2rem;
   }
   
   .header-actions {
     flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .filter-controls {
-    justify-content: center;
+    gap: 15px;
   }
   
   .complaints-grid {
@@ -371,37 +369,36 @@
   }
   
   .complaint-card {
-    padding: 20px;
+    margin: 0 10px;
   }
   
   .complaint-header {
     flex-direction: column;
-    align-items: flex-start;
     gap: 10px;
+    align-items: flex-start;
   }
   
-  .status-badge {
-    align-self: flex-start;
-  }
-}
-
-@media (max-width: 480px) {
-  .my-complaints-header h1 {
-    font-size: 1.8rem;
-  }
-  
-  .complaint-card {
-    padding: 15px;
-  }
-  
-  .meta-item {
+  .detail-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
   }
   
-  .meta-value {
+  .detail-value {
     text-align: left;
-    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .my-complaints-container {
+    padding: 20px 15px;
+  }
+  
+  .complaint-card {
+    margin: 0;
+  }
+  
+  .complaint-content {
+    padding: 15px;
   }
 }

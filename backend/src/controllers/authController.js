@@ -28,12 +28,8 @@ export const register = async (req, res) => {
       role: role || "citizen"
     });
 
-    // Generate JWT
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "30d" }
-    );
+    // Generate JWT using the signToken function
+    const token = signToken(user);
 
     res.status(201).json({
       _id: user._id,

@@ -15,14 +15,25 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const token = getToken();
   const userRole = getUserRole();
 
+  console.log('ProtectedRoute check:', { 
+    hasToken: !!token, 
+    tokenLength: token ? token.length : 0,
+    userRole, 
+    allowedRoles,
+    pathname: window.location.pathname
+  });
+
   if (!token) {
+    console.log('No token found, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
+    console.log('Insufficient role, redirecting to home');
     return <Navigate to="/" replace />;
   }
 
+  console.log('Access granted to protected route');
   return children;
 };
 

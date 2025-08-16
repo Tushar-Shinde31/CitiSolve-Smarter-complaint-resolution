@@ -59,13 +59,22 @@ const Login = () => {
     setIsLoading(true);
     
     try {
+      console.log('Attempting login with:', formData);
       const response = await authAPI.login(formData);
+      console.log('Login response:', response);
       
       // Store JWT and user info in localStorage
-      localStorage.setItem('jwt', response.token);
+      localStorage.setItem('token', response.token);
       localStorage.setItem('userRole', response.user.role);
       localStorage.setItem('userName', response.user.name);
       localStorage.setItem('userId', response.user._id);
+      
+      console.log('Stored in localStorage:', {
+        token: localStorage.getItem('token'),
+        userRole: localStorage.getItem('userRole'),
+        userName: localStorage.getItem('userName'),
+        userId: localStorage.getItem('userId')
+      });
       
       // Redirect based on role
       if (response.user.role === 'admin') {
@@ -74,6 +83,7 @@ const Login = () => {
         navigate('/my-complaints');
       }
     } catch (error) {
+      console.error('Login error:', error);
       setLoginError(error.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
