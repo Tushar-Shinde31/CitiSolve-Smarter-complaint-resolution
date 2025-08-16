@@ -238,5 +238,5 @@ For support and questions:
 
 ---
 
-**Built with ❤️ for better citizen-government communication**
+
 
