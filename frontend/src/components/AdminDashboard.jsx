@@ -11,10 +11,8 @@ const AdminDashboard = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [updatingStatus, setUpdatingStatus] = useState(null);
-  const [statusUpdateData, setStatusUpdateData] = useState({
-    status: '',
-    resolutionNote: ''
-  });
+  // Remove the shared statusUpdateData and replace with individual edit states
+  const [editStates, setEditStates] = useState({});
 
   useEffect(() => {
     fetchComplaints();
@@ -65,35 +63,67 @@ const AdminDashboard = () => {
     setFilteredComplaints(filtered);
   };
 
+  // Initialize edit state for a complaint
+  const initializeEditState = (complaintId) => {
+    if (!editStates[complaintId]) {
+      const complaint = complaints.find(c => c._id === complaintId);
+      setEditStates(prev => ({
+        ...prev,
+        [complaintId]: {
+          status: complaint?.status || '',
+          resolutionNote: complaint?.resolutionNote || ''
+        }
+      }));
+    }
+  };
+
+  // Update edit state for a specific complaint
+  const updateEditState = (complaintId, field, value) => {
+    setEditStates(prev => ({
+      ...prev,
+      [complaintId]: {
+        ...prev[complaintId],
+        [field]: value
+      }
+    }));
+  };
+
   const handleStatusUpdate = async (complaintId) => {
-    if (!statusUpdateData.status) {
+    const editState = editStates[complaintId];
+    if (!editState || !editState.status) {
       alert('Please select a status');
       return;
     }
 
-    if (statusUpdateData.status === 'Resolved' && !statusUpdateData.status.trim()) {
+    if (editState.status === 'Resolved' && !editState.resolutionNote.trim()) {
       alert('Resolution note is required when status is Resolved');
       return;
     }
 
     try {
       setUpdatingStatus(complaintId);
-      await complaintAPI.updateComplaintStatus(complaintId, statusUpdateData);
+      await complaintAPI.updateComplaintStatus(complaintId, editState);
       
       // Update local state
       setComplaints(prev => prev.map(complaint => 
         complaint._id === complaintId 
           ? { 
               ...complaint, 
-              status: statusUpdateData.status,
-              resolutionNote: statusUpdateData.resolutionNote,
+              status: editState.status,
+              resolutionNote: editState.resolutionNote,
               updatedAt: new Date().toISOString()
             }
           : complaint
       ));
       
-      // Reset form
-      setStatusUpdateData({ status: '', resolutionNote: '' });
+      // Reset edit state for this specific complaint
+      setEditStates(prev => ({
+        ...prev,
+        [complaintId]: {
+          status: '',
+          resolutionNote: ''
+        }
+      }));
       setUpdatingStatus(null);
     } catch (error) {
       alert('Failed to update status: ' + error.message);
@@ -286,11 +316,9 @@ const AdminDashboard = () => {
                   <div className="status-update-form">
                     <select
                       className="status-select"
-                      value={statusUpdateData.status}
-                      onChange={(e) => setStatusUpdateData(prev => ({
-                        ...prev,
-                        status: e.target.value
-                      }))}
+                      value={editStates[complaint._id]?.status || ''}
+                      onChange={(e) => updateEditState(complaint._id, 'status', e.target.value)}
+                      onFocus={() => initializeEditState(complaint._id)}
                     >
                       <option value="">Select Status</option>
                       <option value="Open">Open</option>
@@ -298,15 +326,13 @@ const AdminDashboard = () => {
                       <option value="Resolved">Resolved</option>
                     </select>
                     
-                    {statusUpdateData.status === 'Resolved' && (
+                    {editStates[complaint._id]?.status === 'Resolved' && (
                       <textarea
                         className="resolution-note-input"
                         placeholder="Enter resolution note..."
-                        value={statusUpdateData.resolutionNote}
-                        onChange={(e) => setStatusUpdateData(prev => ({
-                          ...prev,
-                          resolutionNote: e.target.value
-                        }))}
+                        value={editStates[complaint._id]?.resolutionNote || ''}
+                        onChange={(e) => updateEditState(complaint._id, 'resolutionNote', e.target.value)}
+                        onFocus={() => initializeEditState(complaint._id)}
                         rows="3"
                       />
                     )}
