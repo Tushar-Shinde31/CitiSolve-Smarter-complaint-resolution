@@ -117,53 +117,6 @@ Helps track progress visually
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 👥Citizen Side (User-facing) Features
 Feature No.
 Feature Description
@@ -196,16 +149,6 @@ API Integration (POST)
 (Not using POST)
 ✔️ Yes
 Covered with previous POST request features
-
-
-
-
-
-
-
-
-
-
 
 
 2

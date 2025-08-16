@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { authAPI } from '../services/api';
 import './Login.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    role: 'citizen' // Default role set to citizen
+    password: ''
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,100 +20,119 @@ const Login = () => {
       ...prev,
       [name]: value
     }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
+    setLoginError('');
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsLoading(true);
+    
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      // Save user data and token to local storage
-      localStorage.setItem('user', JSON.stringify(data));
+      const response = await authAPI.login(formData);
       
-      // Redirect based on selected role
-      if (formData.role === 'admin') {
-        navigate('/admindashboard');
+      // Store JWT and user info in localStorage
+      localStorage.setItem('jwt', response.token);
+      localStorage.setItem('userRole', response.user.role);
+      localStorage.setItem('userName', response.user.name);
+      localStorage.setItem('userId', response.user._id);
+      
+      // Redirect based on role
+      if (response.user.role === 'admin') {
+        navigate('/admin-dashboard');
       } else {
-        navigate('/mycomplaints');
+        navigate('/my-complaints');
       }
-    } catch (err) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+    } catch (error) {
+      setLoginError(error.message || 'Login failed. Please try again.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div>
-      {/* <Navbar /> */}
     <div className="login-container">
-      <h2>Welcome Back</h2>
-      {error && <div className="error-message">{error}</div>}
-      
-      <form onSubmit={handleSubmit} className="login-form">
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="role">Login As</label>
-          <select
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className="role-select"
-            required
+      <div className="login-card">
+        <h2>Login to Citizen Resolution</h2>
+        
+        {loginError && (
+          <div className="error-message">
+            {loginError}
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={errors.email ? 'error' : ''}
+              placeholder="Enter your email"
+            />
+            {errors.email && <span className="error-text">{errors.email}</span>}
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={errors.password ? 'error' : ''}
+              placeholder="Enter your password"
+            />
+            {errors.password && <span className="error-text">{errors.password}</span>}
+          </div>
+          
+          <button 
+            type="submit" 
+            className="login-btn"
+            disabled={isLoading}
           >
-            <option value="citizen">Citizen</option>
-            <option value="admin">Admin</option>
-          </select>
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+        
+        <div className="login-footer">
+          <p>Don't have an account? <Link to="/register">Register here</Link></p>
         </div>
-
-        <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-
-        <p className="register-link">
-          Don't have an account? <Link to="/register">Register here</Link>
-        </p>
-      </form>
-    </div>
+      </div>
     </div>
   );
 };
