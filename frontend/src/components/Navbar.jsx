@@ -30,7 +30,7 @@ const Navbar = () => {
         <div className="navbar-brand">
           <Link to="/" className="brand-link">
             <span className="brand-icon">🏛️</span>
-            <span className="brand-text">Citizen Resolution</span>
+            <span className="brand-text">CitiSolve</span>
           </Link>
         </div>
 
