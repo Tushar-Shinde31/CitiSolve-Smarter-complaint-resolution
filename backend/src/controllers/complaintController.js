@@ -4,6 +4,12 @@ import Complaint from "../models/Complaint.js";
 export const createComplaint = async (req, res, next) => {
   try {
     const complaintData = { ...req.body, user: req.user.id };
+    
+    // Handle photo upload
+    if (req.file) {
+      complaintData.photoUrl = `/uploads/${req.file.filename}`;
+    }
+    
     const complaint = await Complaint.create(complaintData);
     res.status(201).json(complaint);
   } catch (error) {

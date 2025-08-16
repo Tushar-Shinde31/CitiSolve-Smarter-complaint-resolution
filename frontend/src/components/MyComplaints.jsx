@@ -5,57 +5,70 @@ import './MyComplaints.css';
 
 const MyComplaints = () => {
   const [complaints, setComplaints] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [filteredComplaints, setFilteredComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     fetchComplaints();
   }, []);
 
+  useEffect(() => {
+    filterComplaints();
+  }, [complaints, statusFilter]);
+
   const fetchComplaints = async () => {
     try {
-      setIsLoading(true);
-      const response = await complaintAPI.getMyComplaints();
-      setComplaints(response.complaints || []);
+      setLoading(true);
+      const data = await complaintAPI.getComplaints();
+      setComplaints(data);
       setError('');
     } catch (err) {
       setError('Failed to fetch complaints. Please try again.');
       console.error('Error fetching complaints:', err);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const getStatusBadgeClass = (status) => {
-    switch (status.toLowerCase()) {
-      case 'open':
+  const filterComplaints = () => {
+    if (statusFilter === 'all') {
+      setFilteredComplaints(complaints);
+    } else {
+      setFilteredComplaints(complaints.filter(complaint => complaint.status === statusFilter));
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Open':
         return 'status-open';
-      case 'in progress':
+      case 'In Progress':
         return 'status-progress';
-      case 'resolved':
+      case 'Resolved':
         return 'status-resolved';
       default:
-        return 'status-default';
+        return '';
     }
   };
 
-  const getCategoryBadgeClass = (category) => {
-    const categoryMap = {
-      'Infrastructure': 'infrastructure',
-      'Public Safety': 'safety',
-      'Environmental': 'environmental',
-      'Transportation': 'transportation',
-      'Utilities': 'utilities',
-      'Noise Complaint': 'noise',
-      'Other': 'other'
+  const getCategoryColor = (category) => {
+    const colors = {
+      'Roads & Infrastructure': 'category-infrastructure',
+      'Water Supply': 'category-water',
+      'Sanitation & Waste': 'category-sanitation',
+      'Street Lighting': 'category-lighting',
+      'Public Safety': 'category-safety',
+      'Environmental Issues': 'category-environmental',
+      'Noise Pollution': 'category-noise',
+      'Other': 'category-other'
     };
-    return categoryMap[category] || 'other';
+    return colors[category] || 'category-other';
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -64,12 +77,7 @@ const MyComplaints = () => {
     });
   };
 
-  const filteredComplaints = complaints.filter(complaint => {
-    if (filter === 'all') return true;
-    return complaint.status.toLowerCase() === filter.toLowerCase();
-  });
-
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="my-complaints-container">
         <div className="loading-container">
@@ -84,12 +92,25 @@ const MyComplaints = () => {
     return (
       <div className="my-complaints-container">
         <div className="error-container">
-          <div className="error-icon">⚠️</div>
-          <h3>Error Loading Complaints</h3>
-          <p>{error}</p>
+          <p className="error-message">{error}</p>
           <button onClick={fetchComplaints} className="retry-btn">
             Try Again
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (complaints.length === 0) {
+    return (
+      <div className="my-complaints-container">
+        <div className="no-complaints">
+          <div className="no-complaints-icon">📝</div>
+          <h2>No Complaints Yet</h2>
+          <p>You haven't submitted any complaints yet. Start by reporting an issue in your community.</p>
+          <Link to="/submit-complaint" className="new-complaint-btn">
+            Submit Your First Complaint
+          </Link>
         </div>
       </div>
     );
@@ -99,95 +120,112 @@ const MyComplaints = () => {
     <div className="my-complaints-container">
       <div className="my-complaints-header">
         <h1>My Complaints</h1>
-        <p>Track the progress of your submitted complaints</p>
+        <p>Track the status of your submitted complaints</p>
         
         <div className="header-actions">
           <div className="filter-controls">
             <label htmlFor="status-filter">Filter by status:</label>
             <select
               id="status-filter"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
               className="status-filter"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="all">All Statuses</option>
-              <option value="open">Open</option>
-              <option value="in progress">In Progress</option>
-              <option value="resolved">Resolved</option>
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
             </select>
           </div>
           
           <Link to="/submit-complaint" className="new-complaint-btn">
-            + Submit New Complaint
+            Submit New Complaint
           </Link>
         </div>
       </div>
 
-      {filteredComplaints.length === 0 ? (
-        <div className="no-complaints">
-          <div className="no-complaints-icon">📝</div>
-          <h3>No complaints found</h3>
-          <p>
-            {filter === 'all' 
-              ? "You haven't submitted any complaints yet. Start by submitting your first complaint!"
-              : `No complaints with status "${filter}" found.`
-            }
-          </p>
-          {filter === 'all' && (
-            <Link to="/submit-complaint" className="submit-first-btn">
-              Submit Your First Complaint
-            </Link>
-          )}
-        </div>
-      ) : (
-        <div className="complaints-grid">
-          {filteredComplaints.map(complaint => (
-            <div key={complaint._id} className="complaint-card">
-              <div className="complaint-header">
-                <h3 className="complaint-title">{complaint.title}</h3>
-                <div className={`status-badge ${getStatusBadgeClass(complaint.status)}`}>
-                  {complaint.status}
-                </div>
+      <div className="complaints-grid">
+        {filteredComplaints.map((complaint) => (
+          <div key={complaint._id} className="complaint-card">
+            <div className="complaint-header">
+              <div className="complaint-id">
+                ID: {complaint.complaintId}
               </div>
+              <span className={`status-badge ${getStatusColor(complaint.status)}`}>
+                {complaint.status}
+              </span>
+            </div>
+            
+            <div className="complaint-content">
+              <h3 className="complaint-name">{complaint.name}</h3>
               
-              <div className="complaint-meta">
-                <div className="meta-item">
-                  <span className="meta-label">Category:</span>
-                  <span className={`category-badge ${getCategoryBadgeClass(complaint.category)}`}>
+              <div className="complaint-details">
+                <div className="detail-item">
+                  <span className="detail-label">Ward:</span>
+                  <span className="detail-value">{complaint.ward}</span>
+                </div>
+                
+                <div className="detail-item">
+                  <span className="detail-label">Location:</span>
+                  <span className="detail-value">{complaint.location}</span>
+                </div>
+                
+                <div className="detail-item">
+                  <span className="detail-label">Category:</span>
+                  <span className={`category-badge ${getCategoryColor(complaint.category)}`}>
                     {complaint.category}
                   </span>
                 </div>
                 
-                <div className="meta-item">
-                  <span className="meta-label">Location:</span>
-                  <span className="meta-value">{complaint.location}</span>
-                </div>
-                
-                <div className="meta-item">
-                  <span className="meta-label">Submitted:</span>
-                  <span className="meta-value">{formatDate(complaint.createdAt)}</span>
+                <div className="detail-item">
+                  <span className="detail-label">Submitted:</span>
+                  <span className="detail-value">{formatDate(complaint.createdAt)}</span>
                 </div>
                 
                 {complaint.updatedAt !== complaint.createdAt && (
-                  <div className="meta-item">
-                    <span className="meta-label">Last Updated:</span>
-                    <span className="meta-value">{formatDate(complaint.updatedAt)}</span>
+                  <div className="detail-item">
+                    <span className="detail-label">Last Updated:</span>
+                    <span className="detail-value">{formatDate(complaint.updatedAt)}</span>
                   </div>
                 )}
               </div>
               
               <div className="complaint-description">
+                <span className="detail-label">Description:</span>
                 <p>{complaint.description}</p>
               </div>
               
-              {complaint.adminNotes && (
-                <div className="admin-notes">
-                  <h4>Admin Notes:</h4>
-                  <p>{complaint.adminNotes}</p>
+              {complaint.photoUrl && (
+                <div className="complaint-photo">
+                  <span className="detail-label">Photo:</span>
+                  <img 
+                    src={complaint.photoUrl} 
+                    alt="Complaint photo" 
+                    className="photo-thumbnail"
+                  />
+                </div>
+              )}
+              
+              {complaint.resolutionNote && (
+                <div className="resolution-note">
+                  <span className="detail-label">Resolution Note:</span>
+                  <p className="note-content">{complaint.resolutionNote}</p>
                 </div>
               )}
             </div>
-          ))}
+          </div>
+        ))}
+      </div>
+      
+      {filteredComplaints.length === 0 && complaints.length > 0 && (
+        <div className="no-results">
+          <p>No complaints found with the selected status.</p>
+          <button 
+            onClick={() => setStatusFilter('all')} 
+            className="clear-filter-btn"
+          >
+            Show All Complaints
+          </button>
         </div>
       )}
     </div>

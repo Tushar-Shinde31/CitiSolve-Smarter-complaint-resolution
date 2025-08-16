@@ -1,27 +1,31 @@
 const API_BASE_URL = 'http://localhost:5000/api';
 
-// Helper function to get JWT token from localStorage
 const getToken = () => {
-  return localStorage.getItem('jwt');
+  const token = localStorage.getItem('token');
+  console.log('getToken called, token:', token ? 'exists' : 'not found');
+  return token;
 };
 
-// Helper function to get user role from localStorage
 const getUserRole = () => {
-  return localStorage.getItem('userRole');
+  const role = localStorage.getItem('userRole');
+  console.log('getUserRole called, role:', role);
+  return role;
 };
 
-// Generic API call function with JWT authentication
 const apiCall = async (endpoint, options = {}) => {
   const token = getToken();
   
   const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    },
     ...options,
+    headers: {
+      ...options.headers,
+    }
   };
+
+  // Add JWT token if available
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
@@ -33,51 +37,94 @@ const apiCall = async (endpoint, options = {}) => {
     
     return await response.json();
   } catch (error) {
-    console.error('API call failed:', error);
-    throw error;
+    throw new Error(error.message || 'Network error occurred');
   }
 };
 
-// Authentication API calls
+// Authentication API
 export const authAPI = {
-  login: (credentials) => apiCall('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify(credentials),
-  }),
-  
-  register: (userData) => apiCall('/auth/register', {
-    method: 'POST',
-    body: JSON.stringify(userData),
-  }),
+  login: async (credentials) => {
+    return apiCall('/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+  },
+
+  register: async (userData) => {
+    return apiCall('/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+  },
+
+  getCurrentUser: async () => {
+    return apiCall('/auth/me');
+  },
 };
 
-// Complaint API calls
+// Complaint API
 export const complaintAPI = {
-  // Get all complaints (admin only)
-  getAllComplaints: () => apiCall('/complaints'),
-  
-  // Get complaints for logged-in user
-  getMyComplaints: () => apiCall('/complaints/my-complaints'),
-  
-  // Submit new complaint
-  submitComplaint: (complaintData) => apiCall('/complaints', {
-    method: 'POST',
-    body: JSON.stringify(complaintData),
-  }),
-  
-  // Update complaint status (admin only)
-  updateComplaintStatus: (complaintId, status) => apiCall(`/complaints/${complaintId}/status`, {
-    method: 'PATCH',
-    body: JSON.stringify({ status }),
-  }),
-  
-  // Get complaint by ID
-  getComplaintById: (complaintId) => apiCall(`/complaints/${complaintId}`),
+  createComplaint: async (complaintData) => {
+    // Handle FormData for file uploads
+    if (complaintData instanceof FormData) {
+      return apiCall('/complaints', {
+        method: 'POST',
+        body: complaintData, // Don't set Content-Type for FormData
+      });
+    }
+    
+    // Handle regular JSON data
+    return apiCall('/complaints', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(complaintData),
+    });
+  },
+
+  getComplaints: async () => {
+    return apiCall('/complaints');
+  },
+
+  updateComplaintStatus: async (complaintId, updateData) => {
+    return apiCall(`/complaints/${complaintId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    });
+  },
+
+  deleteComplaint: async (complaintId) => {
+    return apiCall(`/complaints/${complaintId}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
-// User API calls
+// User API
 export const userAPI = {
-  getProfile: () => apiCall('/users/profile'),
+  getProfile: async () => {
+    return apiCall('/users/profile');
+  },
+
+  updateProfile: async (profileData) => {
+    return apiCall('/users/profile', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileData),
+    });
+  },
 };
 
 export { getToken, getUserRole };

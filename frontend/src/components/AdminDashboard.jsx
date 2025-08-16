@@ -4,78 +4,132 @@ import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [complaints, setComplaints] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [filteredComplaints, setFilteredComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [statusUpdateData, setStatusUpdateData] = useState({
+    status: '',
+    resolutionNote: ''
+  });
 
   useEffect(() => {
     fetchComplaints();
   }, []);
 
+  useEffect(() => {
+    filterComplaints();
+  }, [complaints, searchTerm, statusFilter, categoryFilter]);
+
   const fetchComplaints = async () => {
     try {
-      setIsLoading(true);
-      const response = await complaintAPI.getAllComplaints();
-      setComplaints(response.complaints || []);
+      setLoading(true);
+      const data = await complaintAPI.getComplaints();
+      setComplaints(data);
       setError('');
     } catch (err) {
       setError('Failed to fetch complaints. Please try again.');
       console.error('Error fetching complaints:', err);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const handleStatusUpdate = async (complaintId, newStatus) => {
+  const filterComplaints = () => {
+    let filtered = complaints;
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(complaint =>
+        complaint.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        complaint.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        complaint.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        complaint.ward.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        complaint.complaintId.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by status
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(complaint => complaint.status === statusFilter);
+    }
+
+    // Filter by category
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter(complaint => complaint.category === categoryFilter);
+    }
+
+    setFilteredComplaints(filtered);
+  };
+
+  const handleStatusUpdate = async (complaintId) => {
+    if (!statusUpdateData.status) {
+      alert('Please select a status');
+      return;
+    }
+
+    if (statusUpdateData.status === 'Resolved' && !statusUpdateData.status.trim()) {
+      alert('Resolution note is required when status is Resolved');
+      return;
+    }
+
     try {
       setUpdatingStatus(complaintId);
-      await complaintAPI.updateComplaintStatus(complaintId, newStatus);
+      await complaintAPI.updateComplaintStatus(complaintId, statusUpdateData);
       
       // Update local state
       setComplaints(prev => prev.map(complaint => 
         complaint._id === complaintId 
-          ? { ...complaint, status: newStatus }
+          ? { 
+              ...complaint, 
+              status: statusUpdateData.status,
+              resolutionNote: statusUpdateData.resolutionNote,
+              updatedAt: new Date().toISOString()
+            }
           : complaint
       ));
-    } catch (err) {
-      alert('Failed to update status. Please try again.');
-      console.error('Error updating status:', err);
-    } finally {
+      
+      // Reset form
+      setStatusUpdateData({ status: '', resolutionNote: '' });
+      setUpdatingStatus(null);
+    } catch (error) {
+      alert('Failed to update status: ' + error.message);
       setUpdatingStatus(null);
     }
   };
 
-  const getStatusBadgeClass = (status) => {
-    switch (status.toLowerCase()) {
-      case 'open':
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Open':
         return 'status-open';
-      case 'in progress':
+      case 'In Progress':
         return 'status-progress';
-      case 'resolved':
+      case 'Resolved':
         return 'status-resolved';
       default:
-        return 'status-default';
+        return '';
     }
   };
 
-  const getCategoryBadgeClass = (category) => {
-    const categoryMap = {
-      'Infrastructure': 'infrastructure',
-      'Public Safety': 'safety',
-      'Environmental': 'environmental',
-      'Transportation': 'transportation',
-      'Utilities': 'utilities',
-      'Noise Complaint': 'noise',
-      'Other': 'other'
+  const getCategoryColor = (category) => {
+    const colors = {
+      'Roads & Infrastructure': 'category-infrastructure',
+      'Water Supply': 'category-water',
+      'Sanitation & Waste': 'category-sanitation',
+      'Street Lighting': 'category-lighting',
+      'Public Safety': 'category-safety',
+      'Environmental Issues': 'category-environmental',
+      'Noise Pollution': 'category-noise',
+      'Other': 'category-other'
     };
-    return categoryMap[category] || 'other';
+    return colors[category] || 'category-other';
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -84,30 +138,19 @@ const AdminDashboard = () => {
     });
   };
 
-  const filteredComplaints = complaints.filter(complaint => {
-    const matchesFilter = filter === 'all' || complaint.status.toLowerCase() === filter.toLowerCase();
-    const matchesSearch = complaint.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         complaint.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         complaint.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         complaint.citizen.name.toLowerCase().includes(searchTerm.toLowerCase());
+  const getStats = () => {
+    const total = complaints.length;
+    const open = complaints.filter(c => c.status === 'Open').length;
+    const inProgress = complaints.filter(c => c.status === 'In Progress').length;
+    const resolved = complaints.filter(c => c.status === 'Resolved').length;
     
-    return matchesFilter && matchesSearch;
-  });
-
-  const getStatusCounts = () => {
-    const counts = { open: 0, 'in progress': 0, resolved: 0, total: complaints.length };
-    complaints.forEach(complaint => {
-      const status = complaint.status.toLowerCase();
-      if (counts.hasOwnProperty(status)) {
-        counts[status]++;
-      }
-    });
-    return counts;
+    return { total, open, inProgress, resolved };
   };
 
-  const statusCounts = getStatusCounts();
+  const stats = getStats();
+  const categories = [...new Set(complaints.map(c => c.category))];
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="admin-dashboard-container">
         <div className="loading-container">
@@ -122,9 +165,7 @@ const AdminDashboard = () => {
     return (
       <div className="admin-dashboard-container">
         <div className="error-container">
-          <div className="error-icon">⚠️</div>
-          <h3>Error Loading Complaints</h3>
-          <p>{error}</p>
+          <p className="error-message">{error}</p>
           <button onClick={fetchComplaints} className="retry-btn">
             Try Again
           </button>
@@ -141,20 +182,20 @@ const AdminDashboard = () => {
       </div>
 
       <div className="dashboard-stats">
-        <div className="stat-card">
-          <div className="stat-number">{statusCounts.total}</div>
+        <div className="stat-card total">
+          <div className="stat-number">{stats.total}</div>
           <div className="stat-label">Total Complaints</div>
         </div>
         <div className="stat-card open">
-          <div className="stat-number">{statusCounts.open}</div>
+          <div className="stat-number">{stats.open}</div>
           <div className="stat-label">Open</div>
         </div>
         <div className="stat-card progress">
-          <div className="stat-number">{statusCounts['in progress']}</div>
+          <div className="stat-number">{stats.inProgress}</div>
           <div className="stat-label">In Progress</div>
         </div>
         <div className="stat-card resolved">
-          <div className="stat-number">{statusCounts.resolved}</div>
+          <div className="stat-number">{stats.resolved}</div>
           <div className="stat-label">Resolved</div>
         </div>
       </div>
@@ -164,102 +205,148 @@ const AdminDashboard = () => {
           <div className="search-box">
             <input
               type="text"
-              placeholder="Search complaints..."
+              className="search-input"
+              placeholder="Search complaints by ID, name, description, location, or ward..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
             />
           </div>
           
           <div className="filter-controls">
-            <label htmlFor="status-filter">Filter by status:</label>
             <select
-              id="status-filter"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="status-filter"
+              className="filter-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="all">All Statuses</option>
-              <option value="open">Open</option>
-              <option value="in progress">In Progress</option>
-              <option value="resolved">Resolved</option>
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+            
+            <select
+              className="filter-select"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <option value="all">All Categories</option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
             </select>
           </div>
         </div>
       </div>
 
-      {filteredComplaints.length === 0 ? (
-        <div className="no-complaints">
-          <div className="no-complaints-icon">📝</div>
-          <h3>No complaints found</h3>
-          <p>
-            {searchTerm 
-              ? `No complaints match "${searchTerm}" with status "${filter}"`
-              : `No complaints with status "${filter}" found.`
-            }
-          </p>
-        </div>
-      ) : (
-        <div className="complaints-table-container">
-          <table className="complaints-table">
-            <thead>
-              <tr>
-                <th>Citizen</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Location</th>
-                <th>Status</th>
-                <th>Submitted</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredComplaints.map(complaint => (
-                <tr key={complaint._id}>
-                  <td className="citizen-info">
-                    <div className="citizen-name">{complaint.citizen.name}</div>
-                    <div className="citizen-email">{complaint.citizen.email}</div>
-                  </td>
-                  <td className="complaint-title">
-                    <div className="title-text">{complaint.title}</div>
-                    <div className="description-preview">
-                      {complaint.description.substring(0, 100)}
-                      {complaint.description.length > 100 && '...'}
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`category-badge ${getCategoryBadgeClass(complaint.category)}`}>
-                      {complaint.category}
-                    </span>
-                  </td>
-                  <td className="location">{complaint.location}</td>
-                  <td>
-                    <span className={`status-badge ${getStatusBadgeClass(complaint.status)}`}>
-                      {complaint.status}
-                    </span>
-                  </td>
-                  <td className="date">{formatDate(complaint.createdAt)}</td>
-                  <td className="actions">
+      <div className="complaints-table-container">
+        <table className="complaints-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Citizen</th>
+              <th>Ward</th>
+              <th>Location</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Last Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredComplaints.map((complaint) => (
+              <tr key={complaint._id}>
+                <td className="complaint-id">{complaint.complaintId}</td>
+                <td className="citizen-info">
+                  <div className="citizen-name">{complaint.name}</div>
+                  <div className="citizen-email">{complaint.user?.email}</div>
+                </td>
+                <td>{complaint.ward}</td>
+                <td>{complaint.location}</td>
+                <td>
+                  <span className={`category-badge ${getCategoryColor(complaint.category)}`}>
+                    {complaint.category}
+                  </span>
+                </td>
+                <td className="description-cell">
+                  <div className="description-text">{complaint.description}</div>
+                  {complaint.photoUrl && (
+                    <div className="photo-indicator">📷</div>
+                  )}
+                </td>
+                <td>
+                  <span className={`status-badge ${getStatusColor(complaint.status)}`}>
+                    {complaint.status}
+                  </span>
+                </td>
+                <td>{formatDate(complaint.createdAt)}</td>
+                <td>{formatDate(complaint.updatedAt)}</td>
+                <td className="actions-cell">
+                  <div className="status-update-form">
                     <select
-                      value={complaint.status}
-                      onChange={(e) => handleStatusUpdate(complaint._id, e.target.value)}
-                      disabled={updatingStatus === complaint._id}
-                      className="status-update-select"
+                      className="status-select"
+                      value={statusUpdateData.status}
+                      onChange={(e) => setStatusUpdateData(prev => ({
+                        ...prev,
+                        status: e.target.value
+                      }))}
                     >
-                      <option value="open">Open</option>
-                      <option value="in progress">In Progress</option>
-                      <option value="resolved">Resolved</option>
+                      <option value="">Select Status</option>
+                      <option value="Open">Open</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Resolved">Resolved</option>
                     </select>
-                    {updatingStatus === complaint._id && (
-                      <div className="updating-indicator">Updating...</div>
+                    
+                    {statusUpdateData.status === 'Resolved' && (
+                      <textarea
+                        className="resolution-note-input"
+                        placeholder="Enter resolution note..."
+                        value={statusUpdateData.resolutionNote}
+                        onChange={(e) => setStatusUpdateData(prev => ({
+                          ...prev,
+                          resolutionNote: e.target.value
+                        }))}
+                        rows="3"
+                      />
                     )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                    
+                    <button
+                      className="update-status-btn"
+                      onClick={() => handleStatusUpdate(complaint._id)}
+                      disabled={updatingStatus === complaint._id}
+                    >
+                      {updatingStatus === complaint._id ? 'Updating...' : 'Update'}
+                    </button>
+                  </div>
+                  
+                  {complaint.resolutionNote && (
+                    <div className="resolution-note-display">
+                      <strong>Resolution:</strong> {complaint.resolutionNote}
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        
+        {filteredComplaints.length === 0 && (
+          <div className="no-complaints">
+            <p>No complaints found matching the current filters.</p>
+            <button 
+              onClick={() => {
+                setSearchTerm('');
+                setStatusFilter('all');
+                setCategoryFilter('all');
+              }} 
+              className="clear-filters-btn"
+            >
+              Clear All Filters
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

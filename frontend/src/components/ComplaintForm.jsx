@@ -5,25 +5,26 @@ import './ComplaintForm.css';
 
 const ComplaintForm = () => {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
+    name: '',
+    ward: '',
+    location: '',
     category: '',
-    location: ''
+    description: '',
+    photo: null
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  
-  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const categories = [
-    'Infrastructure',
+    'Roads & Infrastructure',
+    'Water Supply',
+    'Sanitation & Waste',
+    'Street Lighting',
     'Public Safety',
-    'Environmental',
-    'Transportation',
-    'Utilities',
-    'Noise Complaint',
+    'Environmental Issues',
+    'Noise Pollution',
     'Other'
   ];
 
@@ -42,116 +43,170 @@ const ComplaintForm = () => {
     }
   };
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setErrors(prev => ({
+          ...prev,
+          photo: 'Please select an image file'
+        }));
+        return;
+      }
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors(prev => ({
+          ...prev,
+          photo: 'Image size should be less than 5MB'
+        }));
+        return;
+      }
+      setFormData(prev => ({
+        ...prev,
+        photo: file
+      }));
+      setErrors(prev => ({
+        ...prev,
+        photo: ''
+      }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
-    
-    if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
-    } else if (formData.title.trim().length < 5) {
-      newErrors.title = 'Title must be at least 5 characters';
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Name must be at least 2 characters long';
     }
-    
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
-    } else if (formData.description.trim().length < 20) {
-      newErrors.description = 'Description must be at least 20 characters';
+
+    if (!formData.ward.trim()) {
+      newErrors.ward = 'Ward is required';
     }
-    
-    if (!formData.category) {
-      newErrors.category = 'Please select a category';
-    }
-    
+
     if (!formData.location.trim()) {
       newErrors.location = 'Location is required';
     }
-    
+
+    if (!formData.category) {
+      newErrors.category = 'Please select a category';
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = 'Description is required';
+    } else if (formData.description.trim().length < 10) {
+      newErrors.description = 'Description must be at least 10 characters long';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitError('');
-    setSubmitSuccess(false);
-    
+    setErrorMessage('');
+    setSuccessMessage('');
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
-      const complaintData = {
-        title: formData.title.trim(),
-        description: formData.description.trim(),
-        category: formData.category,
-        location: formData.location.trim()
-      };
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name.trim());
+      formDataToSend.append('ward', formData.ward.trim());
+      formDataToSend.append('location', formData.location.trim());
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('description', formData.description.trim());
+      if (formData.photo) {
+        formDataToSend.append('photo', formData.photo);
+      }
+
+      await complaintAPI.createComplaint(formDataToSend);
       
-      await complaintAPI.submitComplaint(complaintData);
+      setSuccessMessage('Complaint submitted successfully! Redirecting to your complaints...');
       
-      setSubmitSuccess(true);
-      setFormData({
-        title: '',
-        description: '',
-        category: '',
-        location: ''
-      });
-      
-      // Redirect to my complaints after 2 seconds
+      // Redirect after 2 seconds
       setTimeout(() => {
         navigate('/my-complaints');
       }, 2000);
-      
     } catch (error) {
-      setSubmitError(error.message || 'Failed to submit complaint. Please try again.');
+      setErrorMessage(error.message || 'Failed to submit complaint. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (submitSuccess) {
-    return (
-      <div className="complaint-form-container">
-        <div className="success-message">
-          <div className="success-icon">✅</div>
-          <h2>Complaint Submitted Successfully!</h2>
-          <p>Your complaint has been submitted and is under review.</p>
-          <p>Redirecting to My Complaints...</p>
-        </div>
-      </div>
-    );
-  }
+  const navigate = useNavigate();
 
   return (
     <div className="complaint-form-container">
       <div className="complaint-form-card">
-        <h2>Submit a New Complaint</h2>
+        <h2>Submit a Complaint</h2>
         <p className="form-subtitle">
-          Help improve your community by reporting issues that need attention.
+          Help us improve your community by reporting issues that need attention
         </p>
-        
-        {submitError && (
+
+        {errorMessage && (
           <div className="error-message">
-            {submitError}
+            {errorMessage}
           </div>
         )}
-        
+
+        {successMessage && (
+          <div className="success-message">
+            {successMessage}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="complaint-form">
           <div className="form-group">
-            <label htmlFor="title">Complaint Title *</label>
+            <label htmlFor="name">Your Name *</label>
             <input
               type="text"
-              id="title"
-              name="title"
-              value={formData.title}
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              className={errors.title ? 'error' : ''}
-              placeholder="Brief description of the issue"
+              className={errors.name ? 'error' : ''}
+              placeholder="Enter your full name"
             />
-            {errors.title && <span className="error-text">{errors.title}</span>}
+            {errors.name && <span className="error-text">{errors.name}</span>}
           </div>
-          
+
+          <div className="form-group">
+            <label htmlFor="ward">Ward *</label>
+            <input
+              type="text"
+              id="ward"
+              name="ward"
+              value={formData.ward}
+              onChange={handleChange}
+              className={errors.ward ? 'error' : ''}
+              placeholder="Enter your ward number or name"
+            />
+            {errors.ward && <span className="error-text">{errors.ward}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="location">Location *</label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              className={errors.location ? 'error' : ''}
+              placeholder="Enter specific location (street, landmark, etc.)"
+            />
+            {errors.location && <span className="error-text">{errors.location}</span>}
+          </div>
+
           <div className="form-group">
             <label htmlFor="category">Category *</label>
             <select
@@ -170,46 +225,49 @@ const ComplaintForm = () => {
             </select>
             {errors.category && <span className="error-text">{errors.category}</span>}
           </div>
-          
+
           <div className="form-group">
-            <label htmlFor="location">Location *</label>
-            <input
-              type="text"
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              className={errors.location ? 'error' : ''}
-              placeholder="Street address, landmark, or area description"
-            />
-            {errors.location && <span className="error-text">{errors.location}</span>}
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="description">Detailed Description *</label>
+            <label htmlFor="description">Description *</label>
             <textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
               className={errors.description ? 'error' : ''}
-              placeholder="Provide detailed information about the issue, when you noticed it, and any other relevant details..."
-              rows="6"
+              placeholder="Describe the issue in detail..."
+              rows="5"
             />
             {errors.description && <span className="error-text">{errors.description}</span>}
           </div>
-          
+
+          <div className="form-group">
+            <label htmlFor="photo">Photo (Optional)</label>
+            <input
+              type="file"
+              id="photo"
+              name="photo"
+              accept="image/*"
+              onChange={handlePhotoChange}
+              className="file-input"
+            />
+            {errors.photo && <span className="error-text">{errors.photo}</span>}
+            <small className="photo-hint">
+              Upload a photo to help us better understand the issue. 
+              Supported formats: JPG, PNG, GIF. Max size: 5MB.
+            </small>
+          </div>
+
           <div className="form-actions">
             <button 
               type="button" 
+              className="btn btn-secondary"
               onClick={() => navigate('/my-complaints')}
-              className="cancel-btn"
             >
               Cancel
             </button>
             <button 
               type="submit" 
-              className="submit-btn"
+              className="btn btn-primary" 
               disabled={isLoading}
             >
               {isLoading ? 'Submitting...' : 'Submit Complaint'}

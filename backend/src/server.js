@@ -6,8 +6,6 @@ import { connectDB } from "./config/db.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import authRoutes from "./routes/authRoutes.js";
-// import { protect, requireRole } from "./middleware/auth.js";
-// import complaintRoutes from "./routes/complaintRoutes.js";
 
 // Load env vars
 dotenv.config();
@@ -21,6 +19,10 @@ const app = express();
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
 
 // Routes
 app.use("/api/complaints", complaintRoutes);
