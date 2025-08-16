@@ -1,4 +1,4 @@
-# 🏛️ Citizen Resolution System
+# 🏛️ Citizen Complaint Resolution System
 
 A comprehensive web application for managing citizen complaints and grievances with role-based access control, file uploads, and real-time status tracking.
 
@@ -238,4 +238,5 @@ For support and questions:
 
 ---
 
-**Built with ❤️ for better citizen-government communication**
+
+
