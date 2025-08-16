@@ -35,37 +35,41 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-menu">
-          <Link 
+          {/* <Link 
             to="/" 
             className={`nav-link ${isActive('/') ? 'active' : ''}`}
           >
             Home
-          </Link>
+          </Link> */}
           
           {userRole && (
             <>
-              <Link 
-                to="/submit-complaint" 
-                className={`nav-link ${isActive('/submit-complaint') ? 'active' : ''}`}
-              >
-                Submit Complaint
-              </Link>
+              {userRole === 'citizen' && (
+                <>
+                  <Link 
+                    to="/submit-complaint" 
+                    className={`nav-link ${isActive('/submit-complaint') ? 'active' : ''}`}
+                  >
+                    Submit Complaint
+                  </Link>
+                  
+                  <Link 
+                    to="/my-complaints" 
+                    className={`nav-link ${isActive('/my-complaints') ? 'active' : ''}`}
+                  >
+                    My Complaints
+                  </Link>
+                </>
+              )}
               
-              <Link 
-                to="/my-complaints" 
-                className={`nav-link ${isActive('/my-complaints') ? 'active' : ''}`}
-              >
-                My Complaints
-              </Link>
-              
-              {userRole === 'admin' && (
+              {/* {userRole === 'admin' && (
                 <Link 
                   to="/admin-dashboard" 
                   className={`nav-link admin-link ${isActive('/admin-dashboard') ? 'active' : ''}`}
                 >
                   Admin Dashboard
                 </Link>
-              )}
+              )} */}
             </>
           )}
         </div>
