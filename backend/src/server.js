@@ -19,7 +19,11 @@ const app = express();
 const _dirname = path.resolve();
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: 'https://citisolve-smarter-complaint-resolution.onrender.com',
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.) to be sent
+}
+app.use(cors(corsOptions));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
