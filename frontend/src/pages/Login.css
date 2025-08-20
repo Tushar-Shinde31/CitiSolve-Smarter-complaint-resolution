@@ -1,21 +1,27 @@
+/* ============================
+   Container Styling
+   ============================ */
 .login-container {
-  min-height: 100vh;
+  min-height: 100vh; /* Full screen height */
   width: 100%;
-  display: flex;
+  display: flex; /* Center horizontally/vertically */
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Nice gradient background */
   padding: 20px;
 }
 
+/* ============================
+   Card Styling
+   ============================ */
 .login-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: white; /* Card with white background */
+  border-radius: 12px; /* Smooth corners */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   padding: 40px;
   width: 100%;
-  max-width: 400px;
-  text-align: center;
+  max-width: 400px; /* Limit card width */
+  text-align: center; /* Center heading and footer */
 }
 
 .login-card h2 {
@@ -25,12 +31,15 @@
   font-weight: 600;
 }
 
+/* ============================
+   Form Styling
+   ============================ */
 .login-form {
-  text-align: left;
+  text-align: left; /* Inputs left aligned */
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 20px; /* Space between fields */
 }
 
 .form-group label {
@@ -52,8 +61,10 @@
   background-color: #fff;
   color: #2d3748;
   font-family: inherit;
+  font-weight: 500;
 }
 
+/* Focused input state */
 .form-group input:focus {
   outline: none;
   border-color: #667eea;
@@ -61,18 +72,13 @@
   background-color: #f8fafc;
 }
 
-/* Placeholder styling */
+/* Placeholder style */
 .form-group input::placeholder {
   color: #a0aec0;
   font-style: italic;
 }
 
-/* Better input styling */
-.form-group input {
-  font-weight: 500;
-}
-
-/* Style for inputs with values */
+/* Input with user value */
 .form-group input.has-value {
   background-color: #f0f9ff;
   border-color: #667eea;
@@ -80,10 +86,12 @@
   font-weight: 600;
 }
 
+/* Input error state */
 .form-group input.error {
   border-color: #e74c3c;
 }
 
+/* Error message text */
 .error-text {
   color: #e74c3c;
   font-size: 12px;
@@ -91,6 +99,9 @@
   display: block;
 }
 
+/* ============================
+   Button Styling
+   ============================ */
 .login-btn {
   width: 100%;
   padding: 14px;
@@ -105,16 +116,21 @@
   margin-top: 10px;
 }
 
+/* Hover effect */
 .login-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
 }
 
+/* Disabled state */
 .login-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
+/* ============================
+   Error Box Styling
+   ============================ */
 .error-message {
   background: #fdf2f2;
   border: 1px solid #fecaca;
@@ -125,6 +141,9 @@
   font-size: 14px;
 }
 
+/* ============================
+   Footer Styling
+   ============================ */
 .login-footer {
   margin-top: 30px;
   padding-top: 20px;
@@ -147,6 +166,9 @@
   text-decoration: underline;
 }
 
+/* ============================
+   Mobile Responsive
+   ============================ */
 @media (max-width: 480px) {
   .login-card {
     padding: 30px 20px;

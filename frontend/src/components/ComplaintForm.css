@@ -1,3 +1,6 @@
+/* ================================
+   Complaint Form - Main Container
+================================ */
 .complaint-form-container {
   min-height: 100vh;
   width: 100%;
@@ -8,6 +11,9 @@
   align-items: center;
 }
 
+/* ================================
+   Complaint Form Card
+================================ */
 .complaint-form-card {
   width: 100%;
   max-width: 800px;
@@ -33,6 +39,9 @@
   line-height: 1.6;
 }
 
+/* ================================
+   Form Layout
+================================ */
 .complaint-form {
   display: flex;
   flex-direction: column;
@@ -51,6 +60,9 @@
   font-size: 1rem;
 }
 
+/* ================================
+   Inputs (Text, Textarea)
+================================ */
 .form-group input,
 .form-group textarea {
   padding: 12px 16px;
@@ -63,7 +75,9 @@
   color: black;
 }
 
-/* Fixed category select styling */
+/* ================================
+   Select (Dropdown)
+================================ */
 .form-group select {
   display: block;
   width: 100%;
@@ -75,6 +89,7 @@
   line-height: 1.4;
   height: 45px;
   background: #fff;
+  /* Custom dropdown arrow */
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 12px center;
   background-repeat: no-repeat;
@@ -88,13 +103,13 @@
   font-weight: 500;
 }
 
-/* Style for placeholder option */
+/* Placeholder option (disabled look) */
 .form-group select option[value=""] {
   color: #a0aec0;
   font-style: italic;
 }
 
-/* Style for select with value */
+/* Highlighted style when value selected */
 .form-group select.has-value {
   background-color: #f0f9ff;
   border-color: #667eea;
@@ -102,7 +117,9 @@
   font-weight: 600;
 }
 
-/* Selected category indicator */
+/* ================================
+   Selected Category Display
+================================ */
 .selected-category {
   margin-top: 8px;
   padding: 8px 12px;
@@ -123,6 +140,9 @@
   font-size: 1.1rem;
 }
 
+/* ================================
+   Focus States
+================================ */
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
@@ -135,6 +155,7 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
 }
 
+/* Dropdown option styling */
 .form-group option {
   padding: 10px;
   background: #fff;
@@ -142,30 +163,36 @@
   font-size: 1rem;
 }
 
-/* Ensure selected option is visible */
 .form-group select option:checked {
   background: #667eea;
   color: #fff;
   font-weight: 600;
 }
 
-/* Hover effect for options */
 .form-group select option:hover {
   background: #edf2f7;
 }
 
+/* ================================
+   Error Styles
+================================ */
 .form-group input.error,
 .form-group select.error,
 .form-group textarea.error {
   border-color: #e74c3c;
 }
 
+/* ================================
+   Textarea
+================================ */
 .form-group textarea {
   resize: vertical;
   min-height: 120px;
 }
 
-/* File input */
+/* ================================
+   File Input
+================================ */
 .file-input {
   padding: 8px 12px;
   border: 2px dashed #e2e8f0;
@@ -188,7 +215,9 @@
   line-height: 1.4;
 }
 
-/* Error / Success messages */
+/* ================================
+   Error / Success Messages
+================================ */
 .error-text {
   color: #e74c3c;
   font-size: 0.85rem;
@@ -218,7 +247,9 @@
   text-align: center;
 }
 
-/* Actions */
+/* ================================
+   Form Actions (Buttons)
+================================ */
 .form-actions {
   display: flex;
   gap: 15px;
@@ -261,7 +292,9 @@
   cursor: not-allowed;
 }
 
-/* Category badges */
+/* ================================
+   Category Badges
+================================ */
 .category-badge {
   display: inline-block;
   padding: 4px 12px;
@@ -307,7 +340,9 @@
   color: #374151;
 }
 
-/* Responsive */
+/* ================================
+   Responsive Styles
+================================ */
 @media (max-width: 768px) {
   .complaint-form-container {
     padding: 20px 15px;

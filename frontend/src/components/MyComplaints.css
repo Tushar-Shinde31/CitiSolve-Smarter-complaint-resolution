@@ -1,10 +1,16 @@
+/* ===============================
+   Main Container & Layout
+=================================*/
 .my-complaints-container {
-  min-height: 100vh;
+  min-height: 100vh; /* Full height of viewport */
   width: 100%;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Soft gradient background */
   padding: 40px 20px;
 }
 
+/* ===============================
+   Header Section
+=================================*/
 .my-complaints-header {
   width: 100%;
   margin: 0 auto 40px;
@@ -24,16 +30,18 @@
   margin-bottom: 30px;
 }
 
+/* Header action buttons and filters */
 .header-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Wrap for small screens */
   gap: 20px;
   max-width: 800px;
   margin: 0 auto;
 }
 
+/* Filter controls (dropdown + label) */
 .filter-controls {
   display: flex;
   align-items: center;
@@ -46,6 +54,7 @@
   font-size: 0.9rem;
 }
 
+/* Dropdown for status filter */
 .status-filter {
   padding: 8px 12px;
   border: 2px solid #e2e8f0;
@@ -62,6 +71,7 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+/* New complaint button */
 .new-complaint-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -77,14 +87,18 @@
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
 }
 
+/* ===============================
+   Complaints Grid & Cards
+=================================*/
 .complaints-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Responsive grid */
   gap: 25px;
   max-width: 1400px;
   margin: 0 auto;
 }
 
+/* Card container */
 .complaint-card {
   background: white;
   border-radius: 16px;
@@ -99,6 +113,9 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
+/* ===============================
+   Card Header
+=================================*/
 .complaint-header {
   display: flex;
   justify-content: space-between;
@@ -108,6 +125,7 @@
   background: #f8fafc;
 }
 
+/* Complaint ID */
 .complaint-id {
   font-family: 'Courier New', monospace;
   font-size: 0.9rem;
@@ -118,6 +136,7 @@
   border-radius: 4px;
 }
 
+/* Complaint status badge */
 .status-badge {
   padding: 6px 12px;
   border-radius: 20px;
@@ -127,6 +146,7 @@
   letter-spacing: 0.5px;
 }
 
+/* Status colors */
 .status-open {
   background: #fef3c7;
   color: #d97706;
@@ -142,10 +162,14 @@
   color: #059669;
 }
 
+/* ===============================
+   Card Content
+=================================*/
 .complaint-content {
   padding: 20px;
 }
 
+/* Complaint title */
 .complaint-name {
   color: #2d3748;
   font-size: 1.3rem;
@@ -153,6 +177,7 @@
   margin-bottom: 15px;
 }
 
+/* Complaint details section */
 .complaint-details {
   display: flex;
   flex-direction: column;
@@ -182,6 +207,7 @@
   flex: 1;
 }
 
+/* Category tags */
 .category-badge {
   padding: 4px 8px;
   border-radius: 12px;
@@ -190,46 +216,17 @@
   text-align: center;
 }
 
-.category-infrastructure {
-  background: #fef3c7;
-  color: #d97706;
-}
+/* Category colors */
+.category-infrastructure { background: #fef3c7; color: #d97706; }
+.category-water { background: #dbeafe; color: #2563eb; }
+.category-sanitation { background: #fce7f3; color: #be185d; }
+.category-lighting { background: #fef9c3; color: #ca8a04; }
+.category-safety { background: #fee2e2; color: #dc2626; }
+.category-environmental { background: #dcfce7; color: #16a34a; }
+.category-noise { background: #f3e8ff; color: #9333ea; }
+.category-other { background: #f1f5f9; color: #64748b; }
 
-.category-water {
-  background: #dbeafe;
-  color: #2563eb;
-}
-
-.category-sanitation {
-  background: #fce7f3;
-  color: #be185d;
-}
-
-.category-lighting {
-  background: #fef9c3;
-  color: #ca8a04;
-}
-
-.category-safety {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.category-environmental {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.category-noise {
-  background: #f3e8ff;
-  color: #9333ea;
-}
-
-.category-other {
-  background: #f1f5f9;
-  color: #64748b;
-}
-
+/* Complaint description */
 .complaint-description {
   margin-bottom: 20px;
 }
@@ -240,6 +237,7 @@
   margin-top: 8px;
 }
 
+/* Complaint photo */
 .complaint-photo {
   margin-bottom: 20px;
 }
@@ -253,6 +251,7 @@
   border: 2px solid #e2e8f0;
 }
 
+/* Resolution note */
 .resolution-note {
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
@@ -268,6 +267,9 @@
   line-height: 1.5;
 }
 
+/* ===============================
+   Loading / Error / Empty States
+=================================*/
 .loading-container,
 .error-container,
 .no-complaints {
@@ -277,6 +279,7 @@
   padding: 40px 20px;
 }
 
+/* Spinner animation */
 .loading-spinner {
   width: 50px;
   height: 50px;
@@ -292,6 +295,7 @@
   100% { transform: rotate(360deg); }
 }
 
+/* Error state */
 .error-message {
   color: #e53e3e;
   font-size: 1.1rem;
@@ -313,6 +317,7 @@
   background: #c53030;
 }
 
+/* No complaints state */
 .no-complaints-icon {
   font-size: 4rem;
   margin-bottom: 20px;
@@ -336,6 +341,7 @@
   color: #4a5568;
 }
 
+/* Clear filter button */
 .clear-filter-btn {
   background: #667eea;
   color: white;
@@ -352,7 +358,9 @@
   background: #5a67d8;
 }
 
-/* Responsive design */
+/* ===============================
+   Responsive Design
+=================================*/
 @media (max-width: 768px) {
   .my-complaints-header h1 {
     font-size: 2rem;
@@ -364,7 +372,7 @@
   }
   
   .complaints-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Single column on tablets */
     gap: 20px;
   }
   

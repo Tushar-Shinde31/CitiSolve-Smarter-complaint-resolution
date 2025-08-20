@@ -3,25 +3,38 @@ import { complaintAPI } from '../services/api';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
+  // State to hold all complaints fetched from backend
   const [complaints, setComplaints] = useState([]);
+
+  // State to hold complaints after applying search & filters
   const [filteredComplaints, setFilteredComplaints] = useState([]);
+
+  // Loader and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Filters & search states
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+
+  // Tracks complaint currently being updated
   const [updatingStatus, setUpdatingStatus] = useState(null);
-  // Remove the shared statusUpdateData and replace with individual edit states
+
+  // Stores temporary edit data (status, resolution note) per complaint
   const [editStates, setEditStates] = useState({});
 
+  // Fetch complaints once when component mounts
   useEffect(() => {
     fetchComplaints();
   }, []);
 
+  // Re-run filter when complaints or filters change
   useEffect(() => {
     filterComplaints();
   }, [complaints, searchTerm, statusFilter, categoryFilter]);
 
+  // Fetch complaints from backend
   const fetchComplaints = async () => {
     try {
       setLoading(true);
@@ -36,10 +49,11 @@ const AdminDashboard = () => {
     }
   };
 
+  // Apply search & filters on complaints
   const filterComplaints = () => {
     let filtered = complaints;
 
-    // Filter by search term
+    // Search filter (ID, name, description, location, ward)
     if (searchTerm) {
       filtered = filtered.filter(complaint =>
         complaint.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -50,12 +64,12 @@ const AdminDashboard = () => {
       );
     }
 
-    // Filter by status
+    // Status filter
     if (statusFilter !== 'all') {
       filtered = filtered.filter(complaint => complaint.status === statusFilter);
     }
 
-    // Filter by category
+    // Category filter
     if (categoryFilter !== 'all') {
       filtered = filtered.filter(complaint => complaint.category === categoryFilter);
     }
@@ -63,7 +77,7 @@ const AdminDashboard = () => {
     setFilteredComplaints(filtered);
   };
 
-  // Initialize edit state for a complaint
+  // Initialize edit state for a complaint when admin focuses on dropdown
   const initializeEditState = (complaintId) => {
     if (!editStates[complaintId]) {
       const complaint = complaints.find(c => c._id === complaintId);
@@ -77,7 +91,7 @@ const AdminDashboard = () => {
     }
   };
 
-  // Update edit state for a specific complaint
+  // Update local edit state for a complaint
   const updateEditState = (complaintId, field, value) => {
     setEditStates(prev => ({
       ...prev,
@@ -88,6 +102,7 @@ const AdminDashboard = () => {
     }));
   };
 
+  // Handle complaint status update
   const handleStatusUpdate = async (complaintId) => {
     const editState = editStates[complaintId];
     if (!editState || !editState.status) {
@@ -95,6 +110,7 @@ const AdminDashboard = () => {
       return;
     }
 
+    // If resolved, resolution note is required
     if (editState.status === 'Resolved' && !editState.resolutionNote.trim()) {
       alert('Resolution note is required when status is Resolved');
       return;
@@ -104,7 +120,7 @@ const AdminDashboard = () => {
       setUpdatingStatus(complaintId);
       await complaintAPI.updateComplaintStatus(complaintId, editState);
       
-      // Update local state
+      // Update local complaints list after successful API call
       setComplaints(prev => prev.map(complaint => 
         complaint._id === complaintId 
           ? { 
@@ -116,7 +132,7 @@ const AdminDashboard = () => {
           : complaint
       ));
       
-      // Reset edit state for this specific complaint
+      // Reset edit state for this complaint
       setEditStates(prev => ({
         ...prev,
         [complaintId]: {
@@ -131,6 +147,7 @@ const AdminDashboard = () => {
     }
   };
 
+  // Utility: Returns CSS class based on complaint status
   const getStatusColor = (status) => {
     switch (status) {
       case 'Open':
@@ -144,6 +161,7 @@ const AdminDashboard = () => {
     }
   };
 
+  // Utility: Returns CSS class based on complaint category
   const getCategoryColor = (category) => {
     const colors = {
       'Roads & Infrastructure': 'category-infrastructure',
@@ -158,6 +176,7 @@ const AdminDashboard = () => {
     return colors[category] || 'category-other';
   };
 
+  // Format dates for display
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -168,6 +187,7 @@ const AdminDashboard = () => {
     });
   };
 
+  // Calculate dashboard stats
   const getStats = () => {
     const total = complaints.length;
     const open = complaints.filter(c => c.status === 'Open').length;
@@ -180,6 +200,7 @@ const AdminDashboard = () => {
   const stats = getStats();
   const categories = [...new Set(complaints.map(c => c.category))];
 
+  // --- Conditional Renderings (loading, error, main UI) ---
   if (loading) {
     return (
       <div className="admin-dashboard-container">
@@ -204,13 +225,16 @@ const AdminDashboard = () => {
     );
   }
 
+  // --- MAIN DASHBOARD RENDER ---
   return (
     <div className="admin-dashboard-container">
+      {/* Header */}
       <div className="admin-dashboard-header">
         <h1>Admin Dashboard</h1>
         <p>Manage and monitor all citizen complaints</p>
       </div>
 
+      {/* Stats section */}
       <div className="dashboard-stats">
         <div className="stat-card total">
           <div className="stat-number">{stats.total}</div>
@@ -230,8 +254,10 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* Search & Filter controls */}
       <div className="dashboard-controls">
         <div className="search-filter">
+          {/* Search */}
           <div className="search-box">
             <input
               type="text"
@@ -242,6 +268,7 @@ const AdminDashboard = () => {
             />
           </div>
           
+          {/* Status & Category Filters */}
           <div className="filter-controls">
             <select
               className="filter-select"
@@ -268,6 +295,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* Complaints Table */}
       <div className="complaints-table-container">
         <table className="complaints-table">
           <thead>
@@ -287,33 +315,49 @@ const AdminDashboard = () => {
           <tbody>
             {filteredComplaints.map((complaint) => (
               <tr key={complaint._id}>
+                {/* Complaint ID */}
                 <td className="complaint-id">{complaint.complaintId}</td>
+
+                {/* Citizen Info */}
                 <td className="citizen-info">
                   <div className="citizen-name">{complaint.name}</div>
                   <div className="citizen-email">{complaint.user?.email}</div>
                 </td>
+
+                {/* Ward & Location */}
                 <td>{complaint.ward}</td>
                 <td>{complaint.location}</td>
+
+                {/* Category Badge */}
                 <td>
                   <span className={`category-badge ${getCategoryColor(complaint.category)}`}>
                     {complaint.category}
                   </span>
                 </td>
+
+                {/* Description + Photo Indicator */}
                 <td className="description-cell">
                   <div className="description-text">{complaint.description}</div>
                   {complaint.photoUrl && (
                     <div className="photo-indicator">📷</div>
                   )}
                 </td>
+
+                {/* Status Badge */}
                 <td>
                   <span className={`status-badge ${getStatusColor(complaint.status)}`}>
                     {complaint.status}
                   </span>
                 </td>
+
+                {/* Dates */}
                 <td>{formatDate(complaint.createdAt)}</td>
                 <td>{formatDate(complaint.updatedAt)}</td>
+
+                {/* Actions (Status Update + Resolution Note) */}
                 <td className="actions-cell">
                   <div className="status-update-form">
+                    {/* Status Select */}
                     <select
                       className="status-select"
                       value={editStates[complaint._id]?.status || ''}
@@ -326,6 +370,7 @@ const AdminDashboard = () => {
                       <option value="Resolved">Resolved</option>
                     </select>
                     
+                    {/* Resolution Note (only when Resolved) */}
                     {editStates[complaint._id]?.status === 'Resolved' && (
                       <textarea
                         className="resolution-note-input"
@@ -337,6 +382,7 @@ const AdminDashboard = () => {
                       />
                     )}
                     
+                    {/* Update Button */}
                     <button
                       className="update-status-btn"
                       onClick={() => handleStatusUpdate(complaint._id)}
@@ -346,6 +392,7 @@ const AdminDashboard = () => {
                     </button>
                   </div>
                   
+                  {/* Show resolution note if available */}
                   {complaint.resolutionNote && (
                     <div className="resolution-note-display">
                       <strong>Resolution:</strong> {complaint.resolutionNote}
@@ -357,6 +404,7 @@ const AdminDashboard = () => {
           </tbody>
         </table>
         
+        {/* If no complaints match filters */}
         {filteredComplaints.length === 0 && (
           <div className="no-complaints">
             <p>No complaints found matching the current filters.</p>

@@ -4,11 +4,14 @@ import { getUserRole } from '../services/api';
 import './Home.css';
 
 const Home = () => {
+  // Get role of logged-in user (citizen / admin) from API helper
   const userRole = getUserRole();
+
+  // Fetch stored user details from localStorage
   const userName = localStorage.getItem('userName');
   const token = localStorage.getItem('token');
 
-  // Debug localStorage
+  // Debug: log localStorage info for testing
   console.log('Home page localStorage check:', {
     userRole,
     userName,
@@ -19,15 +22,19 @@ const Home = () => {
   return (
     <div className="home-container">
       <div className="home-content">
+        
+        {/* -------- Hero Section -------- */}
         <div className="hero-section">
           <h1>Citizen Resolution System</h1>
           <p className="hero-subtitle">
             Report and track community issues efficiently. Your voice matters in building a better community.
           </p>
           
+          {/* If user is logged in, show welcome message, else show login/register buttons */}
           {userRole && userName ? (
             <div className="welcome-message">
               <p>Welcome back, {userName}! ({userRole})</p>
+              {/* Show partial token for debugging/confirmation */}
               <p>Token: {token ? `${token.substring(0, 20)}...` : 'None'}</p>
             </div>
           ) : (
@@ -38,10 +45,12 @@ const Home = () => {
           )}
         </div>
 
+        {/* -------- Features Section -------- */}
         {userRole ? (
           <div className="features-section">
             <h2>Quick Actions</h2>
             <div className="features-grid">
+              {/* Features for Citizen */}
               {userRole === 'citizen' && (
                 <>
                   <div className="feature-card">
@@ -60,6 +69,7 @@ const Home = () => {
                 </>
               )}
               
+              {/* Features for Admin */}
               {userRole === 'admin' && (
                 <div className="feature-card admin-feature">
                   <div className="feature-icon">⚙️</div>
@@ -71,6 +81,7 @@ const Home = () => {
             </div>
           </div>
         ) : (
+          // Steps guide if user not logged in
           <div className="features-section">
             <h2>How It Works</h2>
             <div className="steps-grid">
@@ -93,6 +104,7 @@ const Home = () => {
           </div>
         )}
 
+        {/* -------- CTA Section (for guests only) -------- */}
         {!userRole && (
           <div className="cta-section">
             <h2>Ready to Get Started?</h2>
