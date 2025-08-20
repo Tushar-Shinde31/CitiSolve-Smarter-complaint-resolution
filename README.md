@@ -2,6 +2,8 @@
 
 A comprehensive web application for managing citizen complaints and grievances with role-based access control, file uploads, and real-time status tracking.
 
+🔗 **Live Demo**: [CitiSolve - Smarter Complaint Resolution](https://citisolve-smarter-complaint-resolution.onrender.com)
+
 ## ✨ Features
 
 ### 🔐 Authentication & User Management
@@ -214,10 +216,6 @@ citizen-resolution/
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
-
-This project is licensed under the MIT License.
-
 ## 🆘 Support
 
 For support and questions:
@@ -235,8 +233,5 @@ For support and questions:
 - **API rate limiting**
 - **Advanced search** with Elasticsearch
 - **Dashboard charts** and visualizations
-
----
-
 
 
