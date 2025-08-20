@@ -4,6 +4,7 @@ import { complaintAPI } from '../services/api';
 import './ComplaintForm.css';
 
 const ComplaintForm = () => {
+  // State to store form field values
   const [formData, setFormData] = useState({
     name: '',
     ward: '',
@@ -12,11 +13,16 @@ const ComplaintForm = () => {
     description: '',
     photo: null
   });
+
+  // State for validation errors
   const [errors, setErrors] = useState({});
+  // State for loading spinner
   const [isLoading, setIsLoading] = useState(false);
+  // State for error/success messages
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Categories for dropdown
   const categories = [
     'Roads & Infrastructure',
     'Water Supply',
@@ -28,14 +34,18 @@ const ComplaintForm = () => {
     'Other'
   ];
 
+  // Handle text input & select field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log(`Field ${name} changed to:`, value); // Debug log
+    
+    // Update state dynamically
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+
+    // Clear error message for that field when user types
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -44,10 +54,11 @@ const ComplaintForm = () => {
     }
   };
 
+  // Handle photo upload (file validation)
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file type
+      // Ensure file is an image
       if (!file.type.startsWith('image/')) {
         setErrors(prev => ({
           ...prev,
@@ -55,7 +66,7 @@ const ComplaintForm = () => {
         }));
         return;
       }
-      // Validate file size (max 5MB)
+      // Ensure file is less than 5MB
       if (file.size > 5 * 1024 * 1024) {
         setErrors(prev => ({
           ...prev,
@@ -63,6 +74,7 @@ const ComplaintForm = () => {
         }));
         return;
       }
+      // If valid, update state
       setFormData(prev => ({
         ...prev,
         photo: file
@@ -74,42 +86,53 @@ const ComplaintForm = () => {
     }
   };
 
+  // Validate inputs before submitting
   const validateForm = () => {
     const newErrors = {};
 
+    // Name validation
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     } else if (formData.name.trim().length < 2) {
       newErrors.name = 'Name must be at least 2 characters long';
     }
 
+    // Ward validation
     if (!formData.ward.trim()) {
       newErrors.ward = 'Ward is required';
     }
 
+    // Location validation
     if (!formData.location.trim()) {
       newErrors.location = 'Location is required';
     }
 
+    // Category validation
     if (!formData.category) {
       newErrors.category = 'Please select a category';
     }
 
+    // Description validation
     if (!formData.description.trim()) {
       newErrors.description = 'Description is required';
     } else if (formData.description.trim().length < 10) {
       newErrors.description = 'Description must be at least 10 characters long';
     }
 
+    // Update error state
     setErrors(newErrors);
+
+    // If no errors → form is valid
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
 
+    // Run validation
     if (!validateForm()) {
       return;
     }
@@ -117,7 +140,7 @@ const ComplaintForm = () => {
     setIsLoading(true);
 
     try {
-      // Create FormData for file upload
+      // Create FormData object to send text + file
       const formDataToSend = new FormData();
       formDataToSend.append('name', formData.name.trim());
       formDataToSend.append('ward', formData.ward.trim());
@@ -128,8 +151,10 @@ const ComplaintForm = () => {
         formDataToSend.append('photo', formData.photo);
       }
 
+      // Call API to submit complaint
       await complaintAPI.createComplaint(formDataToSend);
       
+      // Show success message
       setSuccessMessage('Complaint submitted successfully! Redirecting to your complaints...');
       
       // Redirect after 2 seconds
@@ -137,6 +162,7 @@ const ComplaintForm = () => {
         navigate('/my-complaints');
       }, 2000);
     } catch (error) {
+      // Handle API error
       setErrorMessage(error.message || 'Failed to submit complaint. Please try again.');
     } finally {
       setIsLoading(false);
@@ -153,19 +179,14 @@ const ComplaintForm = () => {
           Help us improve your community by reporting issues that need attention
         </p>
 
-        {errorMessage && (
-          <div className="error-message">
-            {errorMessage}
-          </div>
-        )}
+        {/* Show error or success messages */}
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
+        {successMessage && <div className="success-message">{successMessage}</div>}
 
-        {successMessage && (
-          <div className="success-message">
-            {successMessage}
-          </div>
-        )}
-
+        {/* Complaint Form */}
         <form onSubmit={handleSubmit} className="complaint-form">
+          
+          {/* Name Input */}
           <div className="form-group">
             <label htmlFor="name">Your Name *</label>
             <input
@@ -180,6 +201,7 @@ const ComplaintForm = () => {
             {errors.name && <span className="error-text">{errors.name}</span>}
           </div>
 
+          {/* Ward Input */}
           <div className="form-group">
             <label htmlFor="ward">Ward *</label>
             <input
@@ -194,6 +216,7 @@ const ComplaintForm = () => {
             {errors.ward && <span className="error-text">{errors.ward}</span>}
           </div>
 
+          {/* Location Input */}
           <div className="form-group">
             <label htmlFor="location">Location *</label>
             <input
@@ -208,6 +231,7 @@ const ComplaintForm = () => {
             {errors.location && <span className="error-text">{errors.location}</span>}
           </div>
 
+          {/* Category Dropdown */}
           <div className="form-group">
             <label htmlFor="category">Category *</label>
             <select
@@ -224,14 +248,18 @@ const ComplaintForm = () => {
                 </option>
               ))}
             </select>
+
+            {/* Show selected category */}
             {formData.category && (
               <div className="selected-category">
                 Selected: <strong>{formData.category}</strong>
               </div>
             )}
+
             {errors.category && <span className="error-text">{errors.category}</span>}
           </div>
 
+          {/* Description */}
           <div className="form-group">
             <label htmlFor="description">Description *</label>
             <textarea
@@ -246,6 +274,7 @@ const ComplaintForm = () => {
             {errors.description && <span className="error-text">{errors.description}</span>}
           </div>
 
+          {/* Photo Upload */}
           <div className="form-group">
             <label htmlFor="photo">Photo (Optional)</label>
             <input
@@ -263,6 +292,7 @@ const ComplaintForm = () => {
             </small>
           </div>
 
+          {/* Action Buttons */}
           <div className="form-actions">
             <button 
               type="button" 

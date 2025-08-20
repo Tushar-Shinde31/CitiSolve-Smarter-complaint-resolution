@@ -1,23 +1,30 @@
+/* =======================
+   Register Page Container
+   ======================= */
 .register-container {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh; /* Full height screen */
+  width: 100%; /* Full width */
+  display: flex; /* Flex for centering */
+  align-items: center; /* Vertically center */
+  justify-content: center; /* Horizontally center */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Nice gradient background */
   padding: 20px;
 }
 
+/* =======================
+   Register Card (Main Box)
+   ======================= */
 .register-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: white; /* White box */
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Soft shadow */
   padding: 40px;
   width: 100%;
-  max-width: 500px;
-  text-align: center;
+  max-width: 500px; /* Bigger than login form */
+  text-align: center; /* Center text inside */
 }
 
+/* Card Heading */
 .register-card h2 {
   color: #333;
   margin-bottom: 10px;
@@ -25,20 +32,26 @@
   font-weight: 600;
 }
 
+/* Small Subtitle under heading */
 .register-subtitle {
   color: #666;
   margin-bottom: 30px;
   font-size: 16px;
 }
 
+/* =======================
+   Form Styling
+   ======================= */
 .register-form {
-  text-align: left;
+  text-align: left; /* Labels align left */
 }
 
+/* Each input group wrapper */
 .form-group {
   margin-bottom: 20px;
 }
 
+/* Label for input/select */
 .form-group label {
   display: block;
   margin-bottom: 8px;
@@ -47,11 +60,12 @@
   font-size: 14px;
 }
 
+/* Input + Select basic styling */
 .form-group input,
 .form-group select {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #e1e5e9;
+  border: 2px solid #e1e5e9; /* Light gray border */
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.3s ease;
@@ -59,8 +73,10 @@
   background-color: #fff;
   color: #2d3748;
   font-family: inherit;
+  font-weight: 500; /* Slightly bolder text */
 }
 
+/* Custom dropdown arrow for select */
 .form-group select {
   background: white;
   cursor: pointer;
@@ -73,12 +89,13 @@
   -moz-appearance: none;
 }
 
+/* Focus effect for inputs + selects */
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  background-color: #f8fafc;
+  border-color: #667eea; /* Blue border */
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); /* Glow effect */
+  background-color: #f8fafc; /* Slight grayish bg */
 }
 
 /* Placeholder styling */
@@ -87,26 +104,22 @@
   font-style: italic;
 }
 
-/* Better input and select styling */
-.form-group input,
-.form-group select {
-  font-weight: 500;
-}
-
-/* Style for inputs and selects with values */
+/* Inputs/Select with values */
 .form-group input.has-value,
 .form-group select.has-value {
-  background-color: #f0f9ff;
+  background-color: #f0f9ff; /* Light blue background */
   border-color: #667eea;
   color: #1e40af;
   font-weight: 600;
 }
 
+/* Error state for inputs/select */
 .form-group input.error,
 .form-group select.error {
-  border-color: #e74c3c;
+  border-color: #e74c3c; /* Red border */
 }
 
+/* Role hint text (e.g., citizen/admin hint) */
 .role-hint {
   display: block;
   margin-top: 5px;
@@ -115,6 +128,7 @@
   font-style: italic;
 }
 
+/* Error message under field */
 .error-text {
   color: #e74c3c;
   font-size: 12px;
@@ -122,6 +136,9 @@
   display: block;
 }
 
+/* =======================
+   Register Button
+   ======================= */
 .register-btn {
   width: 100%;
   padding: 14px;
@@ -136,16 +153,21 @@
   margin-top: 10px;
 }
 
+/* Hover effect */
 .register-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
 }
 
+/* Disabled state */
 .register-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
+/* =======================
+   Error Message (General)
+   ======================= */
 .error-message {
   background: #fdf2f2;
   border: 1px solid #fecaca;
@@ -156,6 +178,9 @@
   font-size: 14px;
 }
 
+/* =======================
+   Footer Section
+   ======================= */
 .register-footer {
   margin-top: 30px;
   padding-top: 20px;
@@ -168,6 +193,7 @@
   margin: 0;
 }
 
+/* Link in footer */
 .register-footer a {
   color: #667eea;
   text-decoration: none;
@@ -178,6 +204,9 @@
   text-decoration: underline;
 }
 
+/* =======================
+   Mobile Responsive
+   ======================= */
 @media (max-width: 480px) {
   .register-card {
     padding: 30px 20px;

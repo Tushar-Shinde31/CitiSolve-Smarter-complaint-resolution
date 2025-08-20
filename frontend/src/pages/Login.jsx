@@ -4,24 +4,35 @@ import { authAPI } from '../services/api';
 import './Login.css';
 
 const Login = () => {
+  // State for form input values
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+
+  // State for form validation errors
   const [errors, setErrors] = useState({});
+
+  // Loading state for login button
   const [isLoading, setIsLoading] = useState(false);
+
+  // State for login errors (API errors)
   const [loginError, setLoginError] = useState('');
   
   const navigate = useNavigate();
 
+  // Handle input changes (email/password)
   const handleChange = (e) => {
     const { name, value } = e.target;
     console.log(`Login field ${name} changed to:`, value); // Debug log
+
+    // Update formData state dynamically
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+
+    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -30,15 +41,18 @@ const Login = () => {
     }
   };
 
+  // Validate form before submit
   const validateForm = () => {
     const newErrors = {};
     
+    // Email validation
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
     
+    // Password validation
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
@@ -46,25 +60,31 @@ const Login = () => {
     }
     
     setErrors(newErrors);
+
+    // Return true if no errors
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoginError('');
+    e.preventDefault(); // Prevent default page reload
+    setLoginError('');  // Clear previous error messages
     
+    // Validate form inputs
     if (!validateForm()) {
       return;
     }
     
-    setIsLoading(true);
+    setIsLoading(true); // Start loading state
     
     try {
       console.log('Attempting login with:', formData);
+
+      // API call to login
       const response = await authAPI.login(formData);
       console.log('Login response:', response);
       
-      // Store JWT and user info in localStorage
+      // Save user data and token to localStorage
       localStorage.setItem('token', response.token);
       localStorage.setItem('userRole', response.user.role);
       localStorage.setItem('userName', response.user.name);
@@ -77,16 +97,18 @@ const Login = () => {
         userId: localStorage.getItem('userId')
       });
       
-      // Redirect based on role
+      // Redirect user based on role
       if (response.user.role === 'admin') {
         navigate('/admin-dashboard');
       } else {
         navigate('/my-complaints');
       }
     } catch (error) {
+      // Handle API login error
       console.error('Login error:', error);
       setLoginError(error.message || 'Login failed. Please try again.');
     } finally {
+      // Reset loading state
       setIsLoading(false);
     }
   };
@@ -96,13 +118,17 @@ const Login = () => {
       <div className="login-card">
         <h2>Login to Citizen Resolution</h2>
         
+        {/* Show error from API if login fails */}
         {loginError && (
           <div className="error-message">
             {loginError}
           </div>
         )}
         
+        {/* Login Form */}
         <form onSubmit={handleSubmit} className="login-form">
+          
+          {/* Email Field */}
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -117,6 +143,7 @@ const Login = () => {
             {errors.email && <span className="error-text">{errors.email}</span>}
           </div>
           
+          {/* Password Field */}
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -131,6 +158,7 @@ const Login = () => {
             {errors.password && <span className="error-text">{errors.password}</span>}
           </div>
           
+          {/* Submit Button */}
           <button 
             type="submit" 
             className="login-btn"
@@ -140,6 +168,7 @@ const Login = () => {
           </button>
         </form>
         
+        {/* Footer link to Register page */}
         <div className="login-footer">
           <p>Don't have an account? <Link to="/register">Register here</Link></p>
         </div>
