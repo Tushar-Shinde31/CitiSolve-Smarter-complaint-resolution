@@ -3,6 +3,8 @@ import { body } from "express-validator";
 import { register, login, me } from "../controllers/authController.js";
 import { protect } from "../middleware/auth.js";
 
+// Routes for user authentication (register, login, etc.)
+
 const router = express.Router();
 
 router.post(
@@ -25,5 +27,7 @@ router.post(
 );
 
 router.get("/me", protect, me);
+
+// Export authentication routes
 
 export default router;

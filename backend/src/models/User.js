@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
+// Mongoose schema and model for users
 const UserSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -24,4 +25,5 @@ UserSchema.methods.matchPassword = function (candidate) {
   return bcrypt.compare(candidate, this.password);
 };
 
+// Export User model
 export default mongoose.model("User", UserSchema);

@@ -36,8 +36,10 @@ const upload = multer({
 
 const router = express.Router();
 
+// Routes for complaint operations (create, get, update, etc.)
 router.post("/", protect, requireRole("citizen"), upload.single('photo'), createComplaint);
 router.get("/", protect, getComplaints);
 router.patch("/:id/status", protect, requireRole("admin"), updateComplaintStatus);
 
+// Export complaint routes
 export default router;

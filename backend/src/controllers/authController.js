@@ -67,3 +67,7 @@ export const me = async (req, res, next) => {
     res.json(user);
   } catch (err) { next(err); }
 };
+
+// Controller functions for user authentication (register, login, etc.)
+
+// Export authentication controller functions

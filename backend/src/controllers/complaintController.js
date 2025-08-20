@@ -75,3 +75,7 @@ export const updateComplaintStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+// Controller functions for handling complaints (create, update, get, etc.)
+
+// Export complaint controller functions

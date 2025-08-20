@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 
+// Middleware to verify user authentication (JWT token verification)
 export const protect = (req, res, next) => {
   try {
     const auth = req.headers.authorization || "";
@@ -14,6 +15,7 @@ export const protect = (req, res, next) => {
   }
 };
 
+// Export authentication middleware
 export const requireRole = (role) => (req, res, next) => {
   if (!req.user || req.user.role !== role) {
     return res.status(403).json({ message: "Forbidden: insufficient role" });

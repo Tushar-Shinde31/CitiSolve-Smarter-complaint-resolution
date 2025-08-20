@@ -31,4 +31,5 @@ const ComplaintSchema = new mongoose.Schema(
   { timestamps: true } // auto adds createdAt & updatedAt
 );
 
+// Export Complaint model
 export default mongoose.model("Complaint", ComplaintSchema);
