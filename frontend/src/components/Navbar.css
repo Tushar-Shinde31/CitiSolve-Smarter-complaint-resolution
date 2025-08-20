@@ -153,8 +153,8 @@
 }
 
 .register-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  background: #667eea;
+  color: white;
 }
 
 /* Mobile responsive */
