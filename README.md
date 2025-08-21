@@ -234,4 +234,6 @@ For support and questions:
 - **Advanced search** with Elasticsearch
 - **Dashboard charts** and visualizations
 
+
 📌 Note: This project was developed as part of my internship project to demonstrate full-stack development, role-based access, and complaint resolution workflow.
+
