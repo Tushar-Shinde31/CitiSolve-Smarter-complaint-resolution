@@ -4,6 +4,9 @@ A comprehensive web application for managing citizen complaints and grievances w
 
 🔗 **Live Demo**: [CitiSolve - Smarter Complaint Resolution](https://citisolve-smarter-complaint-resolution.onrender.com)
 
+![CleanOps Banner](<img width="1154" height="596" alt="complaints-process-explained-EN" src="https://github.com/user-attachments/assets/6c9187cb-a2ce-493e-adcb-1aac090dcbd6" />
+)
+
 ## ✨ Features
 
 ### 🔐 Authentication & User Management
@@ -236,4 +239,5 @@ For support and questions:
 
 
 📌 Note: This project was developed as part of my internship project to demonstrate full-stack development, role-based access, and complaint resolution workflow.
+
 
