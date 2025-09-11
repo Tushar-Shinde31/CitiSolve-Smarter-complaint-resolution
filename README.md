@@ -4,6 +4,8 @@ A comprehensive web application for managing citizen complaints and grievances w
 
 🔗 **Live Demo**: [CitiSolve - Smarter Complaint Resolution](https://citisolve-smarter-complaint-resolution.onrender.com)
 
+<img width="1536" height="1024" alt="ChatGPT Image Sep 11, 2025, 07_45_03 PM" src="https://github.com/user-attachments/assets/3bd1b0f1-ceae-4d73-939d-404c9d0b9a19" />
+
 ## ✨ Features
 
 ### 🔐 Authentication & User Management
@@ -236,6 +238,7 @@ For support and questions:
 
 
 📌 Note: This project was developed as part of my internship project to demonstrate full-stack development, role-based access, and complaint resolution workflow.
+
 
 
 
