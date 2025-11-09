@@ -20,8 +20,15 @@ const app = express();
 const _dirname = path.resolve();
 
 // Middleware setup (e.g., body parsing, CORS)
+//cors configured
 const corsOptions = {
-  origin: 'https://citisolve-smarter-complaint-resolution.onrender.com',
+  origin: [
+    "http://localhost:5173",   // Vite
+    "http://localhost:3000",   // CRA or fallback
+    "http://localhost:4173",   // Vite preview
+    "https://citisolve-smarter-complaint-resolution.onrender.com"
+  ],
+  methods: ["GET", "POST", "PATCH", "DELETE"],
   credentials: true, // Allow credentials (cookies, authorization headers, etc.) to be sent
 }
 app.use(cors(corsOptions));
